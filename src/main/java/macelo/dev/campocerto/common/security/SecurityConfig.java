@@ -104,7 +104,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/categories").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/providers/me").authenticated()
                         .requestMatchers(HttpMethod.GET, "/api/providers", "/api/providers/cities",
-                                "/api/providers/{id:[0-9]+}").permitAll()
+                                "/api/providers/{id:[0-9]+}", "/api/providers/{id:[0-9]+}/reviews").permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
