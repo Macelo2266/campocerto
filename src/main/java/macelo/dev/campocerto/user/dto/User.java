@@ -1,10 +1,14 @@
-package macelo.dev.campocerto.user;
+package macelo.dev.campocerto.user.dto;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.Instant;
 
 @Entity
+@Getter
+@Setter
 @Table(name = "usuarios")
 public class User {
 
@@ -69,51 +73,4 @@ public class User {
         this.dataAtualizacao = Instant.now();
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getSenhaHash() {
-        return senhaHash;
-    }
-
-    public String getTelefone() {
-        return telefone;
-    }
-
-    public UserRole getPapel() {
-        return papel;
-    }
-
-    public UserStatus getStatus() {
-        return status;
-    }
-
-    public Instant getDataCriacao() {
-        return dataCriacao;
-    }
-
-    public Instant getDataAtualizacao() {
-        return dataAtualizacao;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public void setTelefone(String telefone) {
-        this.telefone = telefone;
-    }
-
-    public void setStatus(UserStatus status) {
-        this.status = status;
-    }
 }

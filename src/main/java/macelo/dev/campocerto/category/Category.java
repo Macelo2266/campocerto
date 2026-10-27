@@ -1,7 +1,11 @@
 package macelo.dev.campocerto.category;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
+@Getter
+@Setter
 @Entity
 @Table(name = "categories")
 public class Category {
@@ -31,14 +35,5 @@ public class Category {
         this.description = description;
     }
 
-    public Long getId() { return id; }
-    public String getName() { return name; }
-    public String getSlug() { return slug; }
-    public String getDescription() { return description; }
-    public boolean isActive() { return active; }
 
-    public void setName(String name) { this.name = name; }
-    public void setSlug(String slug) { this.slug = slug; }
-    public void setDescription(String description) { this.description = description; }
-    public void setActive(boolean active) { this.active = active; }
 }
