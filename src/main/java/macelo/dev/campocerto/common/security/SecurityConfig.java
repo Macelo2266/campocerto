@@ -91,7 +91,9 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http,
+                                                   RestAuthenticationEntryPoint authenticationEntryPoint,
+                                                   RestAccessDeniedHandler accessDeniedHandler) throws Exception {
         http
                 .csrf(csrf -> csrf.disable())
                 .cors(Customizer.withDefaults())
@@ -103,8 +105,14 @@ public class SecurityConfig {
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(handling -> handling
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler)
+                )
                 .oauth2ResourceServer(oauth -> oauth
                         .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                        .authenticationEntryPoint(authenticationEntryPoint)
+                        .accessDeniedHandler(accessDeniedHandler)
                 );
 
         return http.build();

@@ -5,6 +5,7 @@ import macelo.dev.campocerto.auth.dto.LoginRequest;
 import macelo.dev.campocerto.auth.dto.RegisterRequest;
 import macelo.dev.campocerto.common.exception.ApiException;
 import macelo.dev.campocerto.common.security.TokenService;
+import macelo.dev.campocerto.user.UserRepository;
 import macelo.dev.campocerto.user.dto.*;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;

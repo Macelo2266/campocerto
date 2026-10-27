@@ -2,7 +2,6 @@ package macelo.dev.campocerto.user;
 
 import macelo.dev.campocerto.common.exception.ApiException;
 import macelo.dev.campocerto.user.dto.User;
-import macelo.dev.campocerto.user.dto.UserRepository;
 import macelo.dev.campocerto.user.dto.UserResponse;
 import macelo.dev.campocerto.user.dto.UserStatus;
 import org.springframework.http.HttpStatus;
