@@ -1,5 +1,6 @@
 package macelo.dev.campocerto.common.exception;
 
+import org.springframework.dao.OptimisticLockingFailureException;
 import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -92,5 +93,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         log.error("Erro inesperado", ex);
         return ProblemDetail.forStatusAndDetail(
                 HttpStatus.INTERNAL_SERVER_ERROR, "Ocorreu um erro inesperado. Tente novamente mais tarde.");
+    }
+    // Duas pessoas alteraram o mesmo registro ao mesmo tempo
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    public ProblemDetail handleOptimisticLock(OptimisticLockingFailureException ex) {
+        return ProblemDetail.forStatusAndDetail(
+                HttpStatus.CONFLICT,
+                "Os dados foram alterados por outra pessoa. Atualize a página e tente novamente.");
     }
 }
