@@ -2,6 +2,11 @@ package macelo.dev.campocerto.common.security;
 
 import macelo.dev.campocerto.common.config.AppProperties;
 import macelo.dev.campocerto.user.dto.User;
+import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
+import org.springframework.security.oauth2.jwt.JwsHeader;
+import org.springframework.security.oauth2.jwt.JwtClaimsSet;
+import org.springframework.security.oauth2.jwt.JwtEncoder;
+import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;

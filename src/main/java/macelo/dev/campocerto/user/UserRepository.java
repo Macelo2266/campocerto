@@ -1,5 +1,6 @@
-package macelo.dev.campocerto.user.dto;
+package macelo.dev.campocerto.user;
 
+import macelo.dev.campocerto.user.dto.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

@@ -12,4 +12,8 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
     List<Category> findByActiveTrueOrderByNameAsc();
 
     boolean existsByNameIgnoreCase(String name);
+
+    boolean existsBySlug(String slug);
+
+    boolean existsByNameIgnoreCaseAndIdNot(String name, Long id);
 }
