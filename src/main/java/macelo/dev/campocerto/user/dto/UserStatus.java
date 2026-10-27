@@ -1,4 +1,4 @@
-package macelo.dev.campocerto.user;
+package macelo.dev.campocerto.user.dto;
 
 public enum UserStatus {
     ACTIVE,
