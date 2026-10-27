@@ -16,7 +16,9 @@ import jakarta.persistence.Table;
 import macelo.dev.campocerto.category.Category;
 import macelo.dev.campocerto.common.util.SlugUtils;
 import macelo.dev.campocerto.user.dto.User;
+import org.hibernate.annotations.DynamicUpdate;
 
+import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.HashSet;
@@ -29,6 +31,7 @@ import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "provider_profiles")
+@DynamicUpdate
 public class ProviderProfile {
 
     public record OfferingInput(Category category, String priceInfo) {
@@ -59,6 +62,12 @@ public class ProviderProfile {
 
     @Column(nullable = false)
     private boolean available = true;
+
+    @Column(name = "rating_avg", nullable = false, precision = 3, scale = 2)
+    private BigDecimal ratingAvg = BigDecimal.ZERO;
+
+    @Column(name = "rating_count", nullable = false)
+    private int ratingCount;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
@@ -162,6 +171,11 @@ public class ProviderProfile {
                 .collect(Collectors.toSet());
     }
 
+    public void applyRating(BigDecimal average, int count) {
+        this.ratingAvg = average;
+        this.ratingCount = count;
+    }
+
     public Long getId() { return id; }
     public User getUser() { return user; }
     public String getProfessionalName() { return professionalName; }
@@ -174,4 +188,6 @@ public class ProviderProfile {
     public Instant getUpdatedAt() { return updatedAt; }
     public Set<ProviderServiceArea> getServiceAreas() { return serviceAreas; }
     public Set<ProviderOffering> getOfferings() { return offerings; }
+    public BigDecimal getRatingAvg() { return ratingAvg; }
+    public int getRatingCount() { return ratingCount; }
 }
