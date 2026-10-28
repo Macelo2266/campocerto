@@ -78,7 +78,7 @@
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
-			<version>1.18.34</version>
+			<version>1.18.46</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -147,6 +147,8 @@
 			<version>${kotlin.version}</version>
 			<scope>test</scope>
 		</dependency>
+
+
 	</dependencies>
 
 

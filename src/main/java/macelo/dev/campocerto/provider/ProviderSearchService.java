@@ -77,8 +77,10 @@ public class ProviderSearchService {
         return ProviderPublicResponse.from(profile);
     }
 
+
     @Transactional(readOnly = true)
     public List<String> listCities() {
-        return areaRepository.findPublicCities();
+        return areaRepository.findPublicCities(UserStatus.ACTIVE);
     }
+
 }

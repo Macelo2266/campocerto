@@ -12,14 +12,13 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authorization.ConditionalAuthorizationManager;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.when;
-import static org.springframework.security.authorization.ConditionalAuthorizationManager.when;
 
 @ExtendWith(MockitoExtension.class)
 class AdminUserServiceTest {
@@ -35,7 +34,7 @@ class AdminUserServiceTest {
 
     @Test
     void naoPermiteAlterarAPropriaConta() {
-        when(userRepository.findById(ADMIN_ID)).thenReturn(Optional.of(user(ADMIN_ID, UserRole.ADMIN)));
+        ConditionalAuthorizationManager.when(userRepository.findById(ADMIN_ID)).thenReturn(Optional.of(user(ADMIN_ID, UserRole.ADMIN)));
 
         ApiException ex = assertThrows(ApiException.class,
                 () -> service.changeStatus(ADMIN_ID, ADMIN_ID, UserStatus.BLOCKED));
@@ -45,7 +44,7 @@ class AdminUserServiceTest {
 
     @Test
     void naoPermiteAlterarOutroAdministrador() {
-        when(userRepository.findById(TARGET_ID)).thenReturn(Optional.of(user(TARGET_ID, UserRole.ADMIN)));
+        ConditionalAuthorizationManager.when(userRepository.findById(TARGET_ID)).thenReturn(Optional.of(user(TARGET_ID, UserRole.ADMIN)));
 
         ApiException ex = assertThrows(ApiException.class,
                 () -> service.changeStatus(ADMIN_ID, TARGET_ID, UserStatus.SUSPENDED));
@@ -55,7 +54,7 @@ class AdminUserServiceTest {
 
     @Test
     void usuarioInexistenteDa404() {
-        when(userRepository.findById(TARGET_ID)).thenReturn(Optional.empty());
+        ConditionalAuthorizationManager.when(userRepository.findById(TARGET_ID)).thenReturn(Optional.empty());
 
         ApiException ex = assertThrows(ApiException.class,
                 () -> service.changeStatus(ADMIN_ID, TARGET_ID, UserStatus.SUSPENDED));
@@ -66,7 +65,7 @@ class AdminUserServiceTest {
     @Test
     void suspendeUmUsuarioComum() {
         User target = user(TARGET_ID, UserRole.FARMER);
-        when(userRepository.findById(TARGET_ID)).thenReturn(Optional.of(target));
+        ConditionalAuthorizationManager.when(userRepository.findById(TARGET_ID)).thenReturn(Optional.of(target));
 
         AdminUserResponse response = service.changeStatus(ADMIN_ID, TARGET_ID, UserStatus.SUSPENDED);
 
@@ -77,7 +76,7 @@ class AdminUserServiceTest {
     @Test
     void mesmoStatusNaoAlteraNada() {
         User target = user(TARGET_ID, UserRole.PROVIDER);
-        when(userRepository.findById(TARGET_ID)).thenReturn(Optional.of(target));
+        ConditionalAuthorizationManager.when(userRepository.findById(TARGET_ID)).thenReturn(Optional.of(target));
 
         AdminUserResponse response = service.changeStatus(ADMIN_ID, TARGET_ID, UserStatus.ACTIVE);
 

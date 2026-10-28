@@ -1,1 +1,202 @@
-/* You can add global styles to this file, and also import other style files */
+/* ===== Tokens de design ===== */
+:root {
+  --green-900: #1b3d22;
+  --green-800: #25552d;
+  --green-700: #2d6a35;
+  --green-100: #e4f0e2;
+  --green-50: #f1f7ef;
+  --earth-600: #8a5a1f;
+  --bg: #f8faf5;
+  --surface: #ffffff;
+  --text: #1c2a1f;
+  --muted: #4a584d;
+  --border: #c9d6c7;
+  --danger: #b3261e;
+  --danger-bg: #fdecea;
+  --info: #124a8a;
+  --info-bg: #e8f1fb;
+  --radius: 12px;
+  --shadow: 0 1px 3px rgb(0 0 0 / 0.08), 0 4px 12px rgb(0 0 0 / 0.05);
+}
+
+/* ===== Base ===== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+}
+
+h1, h2, h3 {
+  line-height: 1.25;
+  color: var(--green-900);
+}
+
+h1 { font-size: 1.75rem; margin: 0 0 1rem; }
+h2 { font-size: 1.4rem; }
+
+a { color: var(--green-800); }
+
+:focus-visible {
+  outline: 3px solid #0b57d0;
+  outline-offset: 3px;
+}
+
+.container {
+  width: min(100% - 2rem, 72rem);
+  margin-inline: auto;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  left: 0.5rem;
+  top: -4rem;
+  z-index: 100;
+  padding: 0.75rem 1rem;
+  background: #fff;
+  color: var(--green-900);
+  font-weight: 700;
+  border-radius: 8px;
+}
+
+.skip-link:focus { top: 0.5rem; }
+
+/* ===== Botões ===== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0 1.4rem;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.btn-primary { background: var(--green-700); color: #fff; }
+.btn-primary:hover { background: var(--green-800); }
+
+.btn-secondary { background: var(--surface); color: var(--green-800); border-color: var(--green-700); }
+.btn-secondary:hover { background: var(--green-50); }
+
+.btn-block { width: 100%; }
+
+.btn[disabled] { opacity: 0.6; cursor: not-allowed; }
+
+/* ===== Cartões e páginas ===== */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 1.5rem;
+}
+
+.page-narrow {
+  width: min(100% - 2rem, 30rem);
+  margin: 2rem auto;
+}
+
+.data-list {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.5rem 1.25rem;
+  margin: 0 0 1.5rem;
+}
+
+.data-list dt { font-weight: 700; }
+.data-list dd { margin: 0; overflow-wrap: anywhere; }
+
+/* ===== Formulários ===== */
+.field {
+  margin: 0 0 1.15rem;
+  padding: 0;
+  border: 0;
+}
+
+.field label,
+.field legend {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-weight: 700;
+}
+
+.input {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0 0.85rem;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  font: inherit;
+  color: var(--text);
+  background: #fff;
+}
+
+.input[aria-invalid='true'] { border-color: var(--danger); }
+
+.hint { margin: 0.3rem 0 0; font-size: 0.95rem; color: var(--muted); }
+
+.field-error { margin: 0.35rem 0 0; font-size: 0.95rem; font-weight: 700; color: var(--danger); }
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  min-height: 2.75rem;
+  margin-top: 0.25rem;
+  font-weight: 400;
+}
+
+.check input { width: 1.3rem; height: 1.3rem; accent-color: var(--green-700); }
+
+.choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  margin-bottom: 0.6rem;
+  padding: 0.9rem 1rem;
+  border: 2px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.choice input { width: 1.35rem; height: 1.35rem; margin-top: 0.2rem; accent-color: var(--green-700); }
+.choice:has(input:checked) { border-color: var(--green-700); background: var(--green-50); }
+.choice:has(input:focus-visible) { outline: 3px solid #0b57d0; outline-offset: 3px; }
+
+/* ===== Avisos ===== */
+.alert {
+  margin: 0 0 1.15rem;
+  padding: 0.85rem 1rem;
+  border-left: 5px solid;
+  border-radius: 8px;
+}
+
+.alert-error { background: var(--danger-bg); border-color: var(--danger); color: #5f1411; }
+.alert-info { background: var(--info-bg); border-color: var(--info); color: #0b3157; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}

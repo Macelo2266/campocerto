@@ -1,0 +1,15 @@
+<section class="hero">
+  <div class="container">
+    <h1>Serviços rurais, de gente da sua região</h1>
+    <p class="lead">
+      Encontre quem faz cerca, roçagem, plantio, bomba d'água e muito mais, pertinho da sua propriedade.
+    </p>
+
+    @if (!auth.isLoggedIn()) {
+      <div class="hero-actions">
+        <a class="btn btn-primary" routerLink="/cadastrar">Criar minha conta</a>
+        <a class="btn btn-secondary" routerLink="/entrar">Já tenho conta</a>
+      </div>
+    }
+  </div>
+</section>

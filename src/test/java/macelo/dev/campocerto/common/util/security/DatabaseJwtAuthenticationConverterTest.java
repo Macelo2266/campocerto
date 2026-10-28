@@ -1,32 +1,31 @@
-package macelo.dev.campocerto.common.security;
+package macelo.dev.campocerto.common.util.security;
 
+import macelo.dev.campocerto.common.security.DatabaseJwtAuthenticationConverter;
 import macelo.dev.campocerto.user.UserRepository;
 import macelo.dev.campocerto.user.dto.User;
 import macelo.dev.campocerto.user.dto.UserRole;
 import macelo.dev.campocerto.user.dto.UserStatus;
+import org.hibernate.query.restriction.Restriction;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
+import org.springframework.security.authorization.ConditionalAuthorizationManager;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.InvalidBearerTokenException;
 import org.springframework.test.util.ReflectionTestUtils;
+import sun.java2d.cmm.ProfileDataVerifier;
 
 import java.util.List;
 import java.util.Optional;
 
-import static org.hibernate.query.restriction.Restriction.any;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-import static org.springframework.security.authorization.ConditionalAuthorizationManager.when;
-import static sun.java2d.cmm.ProfileDataVerifier.verify;
+
 
 @ExtendWith(MockitoExtension.class)
 class DatabaseJwtAuthenticationConverterTest {
@@ -39,7 +38,7 @@ class DatabaseJwtAuthenticationConverterTest {
 
     @Test
     void oPapelVemDoBancoENaoDoToken() {
-        when(userRepository.findById(7L)).thenReturn(Optional.of(user(7L, UserRole.ADMIN)));
+        ConditionalAuthorizationManager.when(userRepository.findById(7L)).thenReturn(Optional.of(user(7L, UserRole.ADMIN)));
         Jwt jwt = Jwt.withTokenValue("t").header("alg", "HS256").subject("7").claim("role", "FARMER").build();
 
         AbstractAuthenticationToken auth = converter.convert(jwt);
@@ -52,14 +51,14 @@ class DatabaseJwtAuthenticationConverterTest {
     void recusaUsuarioSuspenso() {
         User suspended = user(7L, UserRole.FARMER);
         suspended.setStatus(UserStatus.SUSPENDED);
-        when(userRepository.findById(7L)).thenReturn(Optional.of(suspended));
+        ConditionalAuthorizationManager.when(userRepository.findById(7L)).thenReturn(Optional.of(suspended));
 
         assertThrows(InvalidBearerTokenException.class, () -> converter.convert(jwtOf("7")));
     }
 
     @Test
     void recusaUsuarioInexistente() {
-        when(userRepository.findById(7L)).thenReturn(Optional.empty());
+        ConditionalAuthorizationManager.when(userRepository.findById(7L)).thenReturn(Optional.empty());
 
         assertThrows(InvalidBearerTokenException.class, () -> converter.convert(jwtOf("7")));
     }
@@ -67,7 +66,7 @@ class DatabaseJwtAuthenticationConverterTest {
     @Test
     void recusaIdentificadorQueNaoEhNumero() {
         assertThrows(InvalidBearerTokenException.class, () -> converter.convert(jwtOf("abc")));
-        verify(userRepository, never()).findById(any());
+        ProfileDataVerifier.verify(userRepository, never()).findById(Restriction.any());
     }
 
     private Jwt jwtOf(String subject) {
