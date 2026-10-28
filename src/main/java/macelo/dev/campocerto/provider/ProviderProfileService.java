@@ -113,7 +113,7 @@ public class ProviderProfileService {
         profile.syncOfferings(resolveOfferings(profile, request.offerings()));
     }
 
-    private List<ProviderProfile.OfferingInput> resolveOfferings(ProviderProfile profile, List<OfferingRequest> requested) {
+    private List<ProviderProfile.OfferingInput> resolveOfferings(ProviderProfile profile, List<ProviderProfileRequest.OfferingRequest> requested) {
         Set<Long> ids = new LinkedHashSet<>();
         for (ProviderProfileRequest.OfferingRequest offering : requested) {
             if (!ids.add(offering.categoryId())) {

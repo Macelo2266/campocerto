@@ -1,8 +1,9 @@
 package macelo.dev.campocerto.common.validation;
 
-import br.com.campocerto.common.util.PhoneUtils;
+
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import macelo.dev.campocerto.common.util.PhoneUtils;
 
 public class BrazilianMobileValidator implements ConstraintValidator<BrazilianMobile, String> {
 

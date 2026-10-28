@@ -1,3 +1,4 @@
+
 package macelo.dev.campocerto;
 
 import org.springframework.boot.SpringApplication;
@@ -9,5 +10,5 @@ public class CampocertoApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(CampocertoApplication.class, args);
 	}
-
 }
+
