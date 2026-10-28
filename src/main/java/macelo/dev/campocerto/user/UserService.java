@@ -32,6 +32,18 @@ public class UserService {
         return UserResponse.from(user);
     }
 
+    public User requireActiveUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() ->
+                        new RuntimeException("Usuário não encontrado: " + userId));
+
+        if (user.getStatus() != UserStatus.ACTIVE) {
+            throw new RuntimeException("Usuário inativo");
+        }
+
+        return user;
+    }
+
 
     // Duas pessoas alteraram o mesmo registro ao mesmo tempo
     @ExceptionHandler(OptimisticLockingFailureException.class)

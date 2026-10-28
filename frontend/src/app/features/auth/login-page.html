@@ -1,0 +1,63 @@
+<section class="page-narrow">
+  <div class="card">
+    <h1>Entrar</h1>
+
+    @if (expirou()) {
+      <div class="alert alert-info" role="status">
+        Sua sessão terminou. Entre novamente para continuar.
+      </div>
+    }
+
+    @if (errorMessage(); as message) {
+      <div class="alert alert-error" role="alert">{{ message }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate [attr.aria-busy]="loading()">
+      <div class="field">
+        <label for="email">E-mail</label>
+        <input
+          id="email"
+          class="input"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          inputmode="email"
+          [attr.aria-invalid]="fieldError(form.controls.email) ? 'true' : null"
+          [attr.aria-describedby]="fieldError(form.controls.email) ? 'email-error' : null"
+        />
+        @if (fieldError(form.controls.email); as message) {
+          <p id="email-error" class="field-error">{{ message }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="password">Senha</label>
+        <input
+          id="password"
+          class="input"
+          [type]="showPassword() ? 'text' : 'password'"
+          formControlName="password"
+          autocomplete="current-password"
+          [attr.aria-invalid]="fieldError(form.controls.password) ? 'true' : null"
+          [attr.aria-describedby]="fieldError(form.controls.password) ? 'password-error' : null"
+        />
+        @if (fieldError(form.controls.password); as message) {
+          <p id="password-error" class="field-error">{{ message }}</p>
+        }
+        <label class="check">
+          <input type="checkbox" [checked]="showPassword()" (change)="showPassword.set(!showPassword())" />
+          Mostrar senha
+        </label>
+      </div>
+
+      <button class="btn btn-primary btn-block" type="submit" [disabled]="loading()">
+        {{ loading() ? 'Entrando...' : 'Entrar' }}
+      </button>
+    </form>
+
+    <p>
+      Ainda não tem conta?
+      <a routerLink="/cadastrar" [queryParams]="returnUrl() ? { returnUrl: returnUrl() } : null">Cadastre-se</a>
+    </p>
+  </div>
+</section>

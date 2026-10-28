@@ -1,0 +1,112 @@
+<section class="page-narrow">
+  <div class="card">
+    <h1>Criar conta</h1>
+
+    @if (errorMessage(); as message) {
+      <div class="alert alert-error" role="alert">{{ message }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate [attr.aria-busy]="loading()">
+      <fieldset class="field">
+        <legend>Como você vai usar o CampoCerto?</legend>
+
+        <label class="choice">
+          <input type="radio" formControlName="role" value="FARMER" />
+          <span>
+            <strong>Sou agricultor</strong><br />
+            <span class="hint">Quero contratar serviços rurais.</span>
+          </span>
+        </label>
+
+        <label class="choice">
+          <input type="radio" formControlName="role" value="PROVIDER" />
+          <span>
+            <strong>Sou prestador de serviços</strong><br />
+            <span class="hint">Quero oferecer o meu trabalho.</span>
+          </span>
+        </label>
+      </fieldset>
+
+      <div class="field">
+        <label for="name">Nome completo</label>
+        <input
+          id="name"
+          class="input"
+          type="text"
+          formControlName="name"
+          autocomplete="name"
+          [attr.aria-invalid]="fieldError(form.controls.name) ? 'true' : null"
+          [attr.aria-describedby]="fieldError(form.controls.name) ? 'name-error' : null"
+        />
+        @if (fieldError(form.controls.name); as message) {
+          <p id="name-error" class="field-error">{{ message }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="email">E-mail</label>
+        <input
+          id="email"
+          class="input"
+          type="email"
+          formControlName="email"
+          autocomplete="email"
+          inputmode="email"
+          [attr.aria-invalid]="fieldError(form.controls.email) ? 'true' : null"
+          [attr.aria-describedby]="fieldError(form.controls.email) ? 'email-error' : null"
+        />
+        @if (fieldError(form.controls.email); as message) {
+          <p id="email-error" class="field-error">{{ message }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="phone">Celular com DDD (opcional)</label>
+        <input
+          id="phone"
+          class="input"
+          type="tel"
+          formControlName="phone"
+          autocomplete="tel"
+          inputmode="tel"
+          placeholder="(83) 99999-0000"
+          [attr.aria-invalid]="fieldError(form.controls.phone) ? 'true' : null"
+          [attr.aria-describedby]="fieldError(form.controls.phone) ? 'phone-error' : null"
+        />
+        @if (fieldError(form.controls.phone); as message) {
+          <p id="phone-error" class="field-error">{{ message }}</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="password">Senha</label>
+        <input
+          id="password"
+          class="input"
+          [type]="showPassword() ? 'text' : 'password'"
+          formControlName="password"
+          autocomplete="new-password"
+          [attr.aria-invalid]="fieldError(form.controls.password) ? 'true' : null"
+          [attr.aria-describedby]="fieldError(form.controls.password) ? 'password-hint password-error' : 'password-hint'"
+        />
+        <p id="password-hint" class="hint">Use de 8 a 72 caracteres.</p>
+        @if (fieldError(form.controls.password); as message) {
+          <p id="password-error" class="field-error">{{ message }}</p>
+        }
+        <label class="check">
+          <input type="checkbox" [checked]="showPassword()" (change)="showPassword.set(!showPassword())" />
+          Mostrar senha
+        </label>
+      </div>
+
+      <button class="btn btn-primary btn-block" type="submit" [disabled]="loading()">
+        {{ loading() ? 'Criando conta...' : 'Criar conta' }}
+      </button>
+    </form>
+
+    <p>
+      Já tem conta?
+      <a routerLink="/entrar" [queryParams]="returnUrl() ? { returnUrl: returnUrl() } : null">Entrar</a>
+    </p>
+  </div>
+</section>
