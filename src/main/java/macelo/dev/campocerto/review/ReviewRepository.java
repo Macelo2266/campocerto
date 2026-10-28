@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
+
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     boolean existsByServiceRequestId(Long serviceRequestId);
@@ -18,4 +20,18 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     @EntityGraph(attributePaths = {"reviewer", "serviceRequest", "serviceRequest.category"})
     Page<Review> findByProviderIdAndStatus(Long providerId, ReviewStatus status, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"reviewer", "provider", "serviceRequest"})
+    Page<Review> findAllBy(Pageable pageable);
+
+    @EntityGraph(attributePaths = {"reviewer", "provider", "serviceRequest"})
+    Page<Review> findByStatus(ReviewStatus status, Pageable pageable);
+
+    @EntityGraph(attributePaths = {"reviewer", "provider", "serviceRequest"})
+    Optional<Review> findWithDetailsById(Long id);
+
+    long countByStatus(ReviewStatus status);
+
+    @Query("select avg(r.rating) from Review r where r.status = :status")
+    Double averageRatingByStatus(@Param("status") ReviewStatus status);
 }

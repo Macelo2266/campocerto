@@ -3,6 +3,7 @@ package macelo.dev.campocerto.provider;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Subquery;
+import macelo.dev.campocerto.common.util.LikeUtils;
 import macelo.dev.campocerto.common.util.SlugUtils;
 import macelo.dev.campocerto.user.dto.UserStatus;
 import org.springframework.data.jpa.domain.Specification;
@@ -74,8 +75,6 @@ final class ProviderSpecifications {
 
     // % e _ são curingas do LIKE: se o usuário digitar "%", não pode casar com tudo
     static String escapeLike(String text) {
-        return text.replace("\\", "\\\\")
-                .replace("%", "\\%")
-                .replace("_", "\\_");
+        return LikeUtils.escape(text);
     }
 }

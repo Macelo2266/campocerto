@@ -20,4 +20,6 @@ public interface ProviderProfileRepository
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select p from ProviderProfile p where p.id = :id")
     Optional<ProviderProfile> findForUpdateById(@Param("id") Long id);
+
+    long countByAvailableTrue();
 }

@@ -1,6 +1,5 @@
 package macelo.dev.campocerto.service;
 
-mport org.springframework.dao.DataIntegrityViolationException;
 import macelo.dev.campocerto.category.Category;
 import macelo.dev.campocerto.common.dto.PageResponse;
 import macelo.dev.campocerto.common.exception.ApiException;

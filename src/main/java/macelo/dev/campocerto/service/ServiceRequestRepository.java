@@ -26,6 +26,13 @@ public interface ServiceRequestRepository extends JpaRepository<ServiceRequest, 
     @EntityGraph(attributePaths = {"requester", "provider", "category"})
     Page<ServiceRequest> findByProviderUserIdAndStatus(Long providerUserId, ServiceRequestStatus status,
                                                        Pageable pageable);
+    @EntityGraph(attributePaths = {"requester", "provider", "category"})
+    Page<ServiceRequest> findAllBy(Pageable pageable);
+
+    @EntityGraph(attributePaths = {"requester", "provider", "category"})
+    Page<ServiceRequest> findByStatus(ServiceRequestStatus status, Pageable pageable);
+
+    long countByStatus(ServiceRequestStatus status);
 
     long countByRequesterIdAndStatus(Long requesterId, ServiceRequestStatus status);
 
