@@ -1,0 +1,146 @@
+@let state = categories.state();
+
+<h2>Categorias de serviços</h2>
+
+@if (state.status === 'loading') {
+  <app-loading-state message="Carregando categorias..." />
+} @else if (state.status === 'error') {
+  <app-error-state [message]="state.error.message" (retry)="categories.reload()" />
+} @else {
+  <section class="card form-section" aria-labelledby="category-form-title">
+    <h3 id="category-form-title">{{ isEditing() ? 'Editando: ' + editing()?.name : 'Nova categoria' }}</h3>
+
+    @if (formError(); as message) {
+      <div class="alert alert-error" role="alert">{{ message }}</div>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate [attr.aria-busy]="saving()">
+      <div class="field">
+        <label for="category-name">Nome</label>
+        <input
+          id="category-name"
+          class="input"
+          type="text"
+          formControlName="name"
+          maxlength="100"
+          autocomplete="off"
+          [attr.aria-invalid]="fieldError(form.controls.name) ? 'true' : null"
+          [attr.aria-describedby]="fieldError(form.controls.name) ? 'category-name-error' : null"
+        />
+        @if (fieldError(form.controls.name); as message) {
+          <p id="category-name-error" class="field-error">{{ message }}</p>
+        }
+        @if (isEditing()) {
+          <p class="hint">O endereço (slug) foi criado junto com a categoria e não muda quando você renomeia.</p>
+        }
+      </div>
+
+      <div class="field">
+        <label for="category-description">Descrição (opcional)</label>
+        <input
+          id="category-description"
+          class="input"
+          type="text"
+          formControlName="description"
+          maxlength="500"
+          autocomplete="off"
+          [attr.aria-invalid]="fieldError(form.controls.description) ? 'true' : null"
+        />
+        @if (fieldError(form.controls.description); as message) {
+          <p class="field-error">{{ message }}</p>
+        }
+      </div>
+
+      <div class="actions">
+        <button class="btn btn-primary" type="submit" [disabled]="saving()">
+          {{ saving() ? 'Salvando...' : isEditing() ? 'Salvar alterações' : 'Criar categoria' }}
+        </button>
+        @if (isEditing()) {
+          <button class="btn btn-secondary" type="button" (click)="cancelEdit()">Cancelar edição</button>
+        }
+      </div>
+    </form>
+  </section>
+
+  <div role="status">
+    @if (announcement(); as text) {
+      <div class="alert alert-info">{{ text }}</div>
+    }
+  </div>
+
+  @if (pageError(); as message) {
+    <div class="alert alert-error" role="alert">{{ message }}</div>
+  }
+
+  <div class="table-wrap" role="region" aria-label="Lista de categorias" tabindex="0">
+    <table class="table">
+      <caption class="sr-only">Categorias de serviços</caption>
+      <thead>
+        <tr>
+          <th scope="col">Nome</th>
+          <th scope="col">Endereço (slug)</th>
+          <th scope="col">Descrição</th>
+          <th scope="col">Situação</th>
+          <th scope="col">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (category of items(); track category.id) {
+          <tr>
+            <th scope="row" tabindex="-1" [id]="'category-' + category.id">{{ category.name }}</th>
+            <td><code>{{ category.slug }}</code></td>
+            <td>{{ category.description ?? '—' }}</td>
+            <td>
+              <span class="badge" [class.badge-ok]="category.active" [class.badge-warn]="!category.active">
+                {{ category.active ? 'Ativa' : 'Inativa' }}
+              </span>
+            </td>
+            <td>
+              <div class="row-actions">
+                <button
+                  type="button"
+                  class="btn btn-secondary btn-small"
+                  [attr.aria-label]="'Editar ' + category.name"
+                  (click)="edit(category)"
+                >
+                  Editar
+                </button>
+                @if (category.active) {
+                  <button
+                    type="button"
+                    class="btn btn-secondary btn-small"
+                    [attr.aria-label]="'Desativar ' + category.name"
+                    (click)="requestDeactivation(category)"
+                  >
+                    Desativar
+                  </button>
+                } @else {
+                  <button
+                    type="button"
+                    class="btn btn-secondary btn-small"
+                    [attr.aria-label]="'Reativar ' + category.name"
+                    [disabled]="busy()"
+                    (click)="reactivate(category)"
+                  >
+                    Reativar
+                  </button>
+                }
+              </div>
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+}
+
+<app-confirm-dialog
+  [title]="'Desativar ' + (pendingDeactivation()?.name ?? '') + '?'"
+  message="A categoria some da página inicial e do filtro de serviços, e agricultores não poderão mais pedir orçamento para este serviço, nem a prestadores que já o oferecem. Os prestadores continuam com o serviço no perfil. Você pode reativar a categoria depois."
+  confirmLabel="Sim, desativar"
+  [danger]="true"
+  [busy]="busy()"
+  [error]="dialogError()"
+  (confirmed)="confirmDeactivation()"
+  (closed)="onDialogClosed()"
+/>

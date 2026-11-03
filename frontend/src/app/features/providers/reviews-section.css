@@ -1,0 +1,13 @@
+.review-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.review-head { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; }
+.review-meta { margin: 0.25rem 0 0; font-size: 0.95rem; color: var(--muted); }
+
+/* Texto do usuário: preserva as quebras de linha e nunca vira HTML */
+.review-comment { margin: 0.6rem 0 0; white-space: pre-line; overflow-wrap: anywhere; }

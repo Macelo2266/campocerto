@@ -1,3 +1,4 @@
+
 package macelo.dev.campocerto.common.config
 
 import org.springframework.context.annotation.Bean
@@ -5,11 +6,11 @@ import org.springframework.context.annotation.Configuration
 import java.time.Clock
 import java.time.ZoneId
 
-
 @Configuration
-class ClockConfig {
+open class ClockConfig {
+
     @Bean
-    fun clock(): Clock? {
+    open fun clock(): Clock {
         return Clock.system(ZoneId.of("America/Fortaleza"))
     }
 }

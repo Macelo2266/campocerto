@@ -1,0 +1,217 @@
+<div class="page-narrow wide">
+  <a class="link-back" routerLink="/painel">‹ Voltar ao painel</a>
+
+  @let state = data.state();
+
+  @if (state.status === 'loading') {
+    <app-loading-state message="Carregando seu perfil..." />
+  } @else if (state.status === 'error') {
+    <app-error-state [message]="state.error.message" (retry)="data.reload()" />
+  } @else if (ready()) {
+    <div class="card">
+      <h1>{{ isEdit() ? 'Editar perfil profissional' : 'Criar perfil profissional' }}</h1>
+
+      @if (!isEdit()) {
+        <p>Depois de salvar, o seu perfil aparece na busca para agricultores da sua região.</p>
+      }
+
+      @if (errorMessage(); as message) {
+        <div class="alert alert-error" role="alert">
+          <p>{{ message }}</p>
+          @if (serverMessages().length > 0) {
+            <ul>
+              @for (item of serverMessages(); track item) {
+                <li>{{ item }}</li>
+              }
+            </ul>
+          }
+        </div>
+      }
+
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate [attr.aria-busy]="loading()">
+        <section class="form-section" aria-labelledby="about-heading">
+          <h2 id="about-heading">Sobre você</h2>
+
+          <div class="field">
+            <label for="professionalName">Nome profissional</label>
+            <input
+              id="professionalName"
+              class="input"
+              type="text"
+              formControlName="professionalName"
+              maxlength="120"
+              autocomplete="organization"
+              aria-describedby="professionalName-hint"
+              [attr.aria-invalid]="fieldError(form.controls.professionalName) ? 'true' : null"
+            />
+            <p id="professionalName-hint" class="hint">Como os clientes vão conhecer você. Ex.: Zé das Cercas.</p>
+            @if (fieldError(form.controls.professionalName); as message) {
+              <p class="field-error">{{ message }}</p>
+            }
+          </div>
+
+          <div class="field">
+            <label for="description">Descrição (opcional)</label>
+            <textarea
+              id="description"
+              class="input"
+              formControlName="description"
+              rows="5"
+              maxlength="1000"
+              aria-describedby="description-hint"
+              [attr.aria-invalid]="fieldError(form.controls.description) ? 'true' : null"
+            ></textarea>
+            <p id="description-hint" class="hint">
+              Conte há quanto tempo trabalha, os materiais que usa e como atende.
+              ({{ form.controls.description.value.length }}/1000)
+            </p>
+            @if (fieldError(form.controls.description); as message) {
+              <p class="field-error">{{ message }}</p>
+            }
+          </div>
+        </section>
+
+        <section class="form-section" aria-labelledby="contact-heading">
+          <h2 id="contact-heading">Contato</h2>
+
+          <div class="field">
+            <label for="whatsapp">WhatsApp (celular com DDD)</label>
+            <input
+              id="whatsapp"
+              class="input"
+              type="tel"
+              formControlName="whatsapp"
+              maxlength="20"
+              autocomplete="tel"
+              inputmode="tel"
+              placeholder="(83) 99999-0000"
+              aria-describedby="whatsapp-hint"
+              [attr.aria-invalid]="fieldError(form.controls.whatsapp) ? 'true' : null"
+            />
+            <p id="whatsapp-hint" class="hint">
+              O seu número <strong>não aparece</strong> na sua página pública. Ele só é usado no botão de WhatsApp,
+              que apenas agricultores com conta conseguem abrir.
+            </p>
+            @if (fieldError(form.controls.whatsapp); as message) {
+              <p class="field-error">{{ message }}</p>
+            }
+          </div>
+        </section>
+
+        <section class="form-section" aria-labelledby="where-heading">
+          <h2 id="where-heading">Onde você atende</h2>
+
+          <div class="field">
+            <label for="main-state">Estado onde você reside</label>
+            <select id="main-state" class="input" [value]="selectedState()" (change)="onMainStateChange($any($event.target).value)">
+              <option value="">Selecione o estado</option>
+              @for (state of states(); track state.id) {
+                <option [value]="state.sigla">{{ state.nome }} ({{ state.sigla }})</option>
+              }
+            </select>
+
+            <label for="city">Cidade</label>
+            <select
+              id="city"
+              class="input"
+              [disabled]="!selectedState() || citiesLoading()"
+              [value]="form.controls.city.value"
+              (change)="selectMainCity($any($event.target).value)"
+              [attr.aria-invalid]="fieldError(form.controls.city) ? 'true' : null"
+            >
+              <option value="">{{ citiesLoading() ? 'Carregando municípios...' : 'Selecione a cidade' }}</option>
+              @for (city of mainCities(); track city.id) {
+                <option [value]="city.nome">{{ city.nome }}</option>
+              }
+            </select>
+            @if (locationsError(); as message) {
+              <p class="field-error" role="alert">{{ message }}</p>
+            }
+            @if (fieldError(form.controls.city); as message) {
+              <p class="field-error">{{ message }}</p>
+            }
+          </div>
+
+          <app-city-list-editor
+            [(cities)]="areas"
+            [baseCity]="form.controls.city.value"
+          />
+        </section>
+
+        <section class="form-section" aria-labelledby="services-heading">
+          <h2 id="services-heading">Serviços que você faz</h2>
+          <p class="hint">
+            Marque os serviços e, se quiser, informe o preço (por exemplo, "R$ 8 por metro"). Sem preço, aparece "a
+            combinar".
+          </p>
+
+          @if (offeringsError(); as message) {
+            <p class="field-error" role="alert">{{ message }}</p>
+          }
+
+          <div formArrayName="offerings">
+            @for (group of form.controls.offerings.controls; track group.controls.categoryId.value; let i = $index) {
+              @let id = group.controls.categoryId.value;
+              @let meta = serviceMeta().get(id);
+
+              <div class="service-row" [formGroupName]="i">
+                <label class="choice">
+                  <input
+                    type="checkbox"
+                    formControlName="selected"
+                    [attr.aria-invalid]="i === 0 && offeringsError() ? 'true' : null"
+                  />
+                  <span>
+                    <strong>{{ meta?.name }}</strong>
+                    @if (meta?.inactive) {
+                      <br />
+                      <span class="hint">
+                        Serviço desativado pela plataforma. Se você desmarcar, não poderá marcar de novo.
+                      </span>
+                    }
+                  </span>
+                </label>
+
+                @if (group.controls.selected.value) {
+                  <div class="price-field">
+                    <label [for]="'price-' + id">
+                      <span class="sr-only">{{ meta?.name }}: </span>Preço (opcional)
+                    </label>
+                    <input
+                      [id]="'price-' + id"
+                      class="input"
+                      type="text"
+                      formControlName="priceInfo"
+                      maxlength="100"
+                      placeholder="Ex.: R$ 8 por metro"
+                      [attr.aria-invalid]="fieldError(group.controls.priceInfo) ? 'true' : null"
+                    />
+                    @if (fieldError(group.controls.priceInfo); as message) {
+                      <p class="field-error">{{ message }}</p>
+                    }
+                  </div>
+                }
+              </div>
+            }
+          </div>
+        </section>
+
+        <section class="form-section" aria-labelledby="availability-heading">
+          <h2 id="availability-heading">Disponibilidade</h2>
+          <label class="check">
+            <input type="checkbox" formControlName="available" />
+            Estou recebendo novos pedidos
+          </label>
+          <p class="hint">Desmarque se estiver sem agenda. Você deixa de aparecer na busca até marcar de novo.</p>
+        </section>
+
+        <div class="actions">
+          <button class="btn btn-primary" type="submit" [disabled]="loading()">
+            {{ loading() ? 'Salvando...' : isEdit() ? 'Salvar alterações' : 'Criar perfil' }}
+          </button>
+          <a class="btn btn-secondary" routerLink="/painel">Cancelar</a>
+        </div>
+      </form>
+    </div>
+  }
+</div>

@@ -1,0 +1,21 @@
+<article class="card provider-card">
+  <h3 class="name">
+    <a class="stretched" [routerLink]="['/profissionais', provider().id]">{{ provider().professionalName }}</a>
+  </h3>
+
+  <p class="city"><span aria-hidden="true">📍</span> {{ provider().city }}</p>
+
+  <app-rating-stars [average]="provider().ratingAverage" [count]="provider().ratingCount" />
+
+  @if (provider().shortDescription) {
+    <p class="desc">{{ provider().shortDescription }}</p>
+  }
+
+  @if (provider().categories.length > 0) {
+    <ul class="chips" aria-label="Serviços oferecidos">
+      @for (category of provider().categories; track category) {
+        <li class="chip">{{ category }}</li>
+      }
+    </ul>
+  }
+</article>

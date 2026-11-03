@@ -15,6 +15,8 @@ public record ProviderPublicResponse(
         String description,
         String city,
         boolean available,
+        Double ratingAverage,
+        int ratingCount,
         List<String> serviceAreas,
         List<ProviderProfileResponse.OfferingResponse> offerings
 ) {
@@ -28,6 +30,8 @@ public record ProviderPublicResponse(
                 full.description(),
                 full.city(),
                 full.available(),
+                full.ratingAverage(),
+                full.ratingCount(),
                 full.serviceAreas(),
                 full.offerings()
         );

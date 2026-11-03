@@ -1,26 +1,68 @@
-<a class="skip-link" href="#conteudo" (click)="skipToContent($event)">Pular para o conteúdo</a>
+
+<a class="skip-link" href="#conteudo" (click)="skipToContent($event)">
+  Pular para o conteúdo
+</a>
 
 <header class="site-header">
   <div class="container header-inner">
-    <a class="brand" routerLink="/" aria-label="CampoCerto, página inicial">🌾 CampoCerto</a>
 
-    <nav aria-label="Principal">
+    <a class="brand" routerLink="/" aria-label="CampoCerto, página inicial">
+      🌾 CampoCerto
+    </a>
+
+    <nav aria-label="Menu principal">
       <ul class="nav-list">
+
         <li>
-          <a class="nav-link" routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+          <a
+            class="nav-link"
+            routerLink="/"
+            routerLinkActive="active"
+            [routerLinkActiveOptions]="{ exact: true }">
             Início
           </a>
         </li>
 
         @if (auth.isLoggedIn()) {
-          <li><a class="nav-link" routerLink="/conta" routerLinkActive="active">Minha conta</a></li>
-          <li><button type="button" class="nav-link nav-button" (click)="logout()">Sair</button></li>
+          <li>
+            <a class="nav-link" routerLink="/conta" routerLinkActive="active">
+              Minha conta
+            </a>
+          </li>
+
+          @if (auth.role() === 'ADMIN') {
+            <li>
+              <a class="nav-link" routerLink="/admin" routerLinkActive="active">
+                Administração
+              </a>
+            </li>
+          }
+
+          <li>
+            <button
+              type="button"
+              class="nav-link nav-button"
+              (click)="logout()">
+              Sair
+            </button>
+          </li>
         } @else {
-          <li><a class="nav-link" routerLink="/entrar" routerLinkActive="active">Entrar</a></li>
-          <li><a class="nav-link nav-cta" routerLink="/cadastrar">Cadastre-se</a></li>
+          <li>
+            <a class="nav-link" routerLink="/entrar" routerLinkActive="active">
+              Entrar
+            </a>
+          </li>
+
+          <li>
+            <a class="nav-link nav-cta" routerLink="/cadastrar">
+              Criar conta
+            </a>
+          </li>
         }
+
       </ul>
     </nav>
+
   </div>
 </header>
 
@@ -30,8 +72,34 @@
 
 <footer class="site-footer">
   <div class="container">
-    <p><strong>CampoCerto</strong>: encontre prestadores de serviços rurais na sua região.</p>
-    <p>Contato: <a href="mailto:contato@campocerto.example">contato@campocerto.example</a></p>
-    <p class="footer-small">© {{ year }} CampoCerto. Projeto de portfólio.</p>
+
+    <div class="footer-content">
+
+      <div class="footer-brand">
+        <a class="brand footer-logo" routerLink="/">
+          🌾 CampoCerto
+        </a>
+
+        <p>
+          Conectamos agricultores a prestadores de serviços rurais,
+          facilitando a busca por profissionais para sua propriedade.
+        </p>
+      </div>
+
+      <div class="footer-links">
+        <h3>Links úteis</h3>
+        <a routerLink="/">Início</a>
+        <a routerLink="/entrar">Entrar</a>
+        <a routerLink="/cadastrar">Criar conta</a>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <p>
+        © {{ year }} CampoCerto. Todos os direitos reservados.
+      </p>
+    </div>
+
   </div>
 </footer>

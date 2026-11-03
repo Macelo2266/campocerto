@@ -1,0 +1,153 @@
+@let result = profile.state();
+
+<div class="page-narrow wide">
+  @if (result.status === 'loading') {
+    <app-loading-state message="Carregando..." />
+  } @else if (result.status === 'error') {
+    @if (result.error.status === 404) {
+      <app-empty-state title="Profissional não encontrado" message="Este perfil não existe ou não está mais disponível.">
+        <a class="btn btn-primary" routerLink="/profissionais">Ver outros profissionais</a>
+      </app-empty-state>
+    } @else {
+      <app-error-state [message]="result.error.message" (retry)="profile.reload()" />
+    }
+  } @else {
+    @let provider = result.data;
+
+    @if (!provider.available) {
+      <app-empty-state
+        title="Este profissional não está recebendo pedidos"
+        message="Ele marcou que está sem agenda no momento. Veja outros profissionais da sua região."
+      >
+        <a class="btn btn-primary" routerLink="/profissionais">Ver outros profissionais</a>
+      </app-empty-state>
+    } @else {
+      <a class="link-back" [routerLink]="['/profissionais', provider.id]">‹ Voltar ao perfil</a>
+
+      <div class="card">
+        <h1>Pedir orçamento</h1>
+        <p>Para <strong>{{ provider.professionalName }}</strong> ({{ provider.city }})</p>
+
+        @if (errorMessage(); as message) {
+          <div class="alert alert-error" role="alert">
+            <p>{{ message }}</p>
+            @if (errorStatus() === 409) {
+              <a routerLink="/solicitacoes">Ver minhas solicitações</a>
+            }
+          </div>
+        }
+
+        <form [formGroup]="form" (ngSubmit)="submit(provider)" novalidate [attr.aria-busy]="loading()">
+          <div class="field">
+            <label for="categoryId">Qual serviço você precisa?</label>
+            <select
+              id="categoryId"
+              class="input"
+              formControlName="categoryId"
+              [attr.aria-invalid]="fieldError(form.controls.categoryId) ? 'true' : null"
+              [attr.aria-describedby]="fieldError(form.controls.categoryId) ? 'categoryId-error' : null"
+            >
+              <option [ngValue]="null" disabled>Escolha um serviço</option>
+              @for (offering of provider.offerings; track offering.categoryId) {
+                <option [ngValue]="offering.categoryId">{{ offering.categoryName }}</option>
+              }
+            </select>
+            @if (selectedOffering(); as selected) {
+              <p class="hint">
+                Preço informado pelo profissional:
+                <strong>{{ selected.priceInfo ?? 'a combinar' }}</strong>
+              </p>
+            }
+            @if (fieldError(form.controls.categoryId); as message) {
+              <p id="categoryId-error" class="field-error">{{ message }}</p>
+            }
+          </div>
+
+          <div class="field">
+            <label for="description">Descreva o trabalho</label>
+            <textarea
+              id="description"
+              class="input"
+              formControlName="description"
+              rows="5"
+              maxlength="2000"
+              aria-describedby="description-hint"
+              [attr.aria-invalid]="fieldError(form.controls.description) ? 'true' : null"
+            ></textarea>
+            <p id="description-hint" class="hint">
+              Conte o tamanho do serviço, onde fica e o que mais ajudar no orçamento. Não escreva senhas, documentos
+              nem dados de outras pessoas.
+              ({{ form.controls.description.value.length }}/2000)
+            </p>
+            @if (fieldError(form.controls.description); as message) {
+              <p class="field-error">{{ message }}</p>
+            }
+          </div>
+
+          <div class="field">
+            <label for="city">Município ou região da propriedade</label>
+            <input
+              id="city"
+              class="input"
+              type="text"
+              formControlName="city"
+              list="city-options"
+              maxlength="100"
+              autocomplete="off"
+              [attr.aria-invalid]="fieldError(form.controls.city) ? 'true' : null"
+              [attr.aria-describedby]="fieldError(form.controls.city) ? 'city-error' : null"
+            />
+            <datalist id="city-options">
+              @for (area of provider.serviceAreas; track area) {
+                <option [value]="area"></option>
+              }
+            </datalist>
+            @if (fieldError(form.controls.city); as message) {
+              <p id="city-error" class="field-error">{{ message }}</p>
+            }
+          </div>
+
+          <div class="field">
+            <label for="desiredDate">Data desejada (opcional)</label>
+            <input
+              id="desiredDate"
+              class="input"
+              type="date"
+              formControlName="desiredDate"
+              [attr.min]="today"
+              [attr.aria-invalid]="fieldError(form.controls.desiredDate) ? 'true' : null"
+              [attr.aria-describedby]="fieldError(form.controls.desiredDate) ? 'desiredDate-error' : null"
+            />
+            @if (fieldError(form.controls.desiredDate); as message) {
+              <p id="desiredDate-error" class="field-error">{{ message }}</p>
+            }
+          </div>
+
+          <div class="field">
+            <label for="additionalInfo">Informações adicionais (opcional)</label>
+            <textarea
+              id="additionalInfo"
+              class="input"
+              formControlName="additionalInfo"
+              rows="3"
+              maxlength="1000"
+              [attr.aria-invalid]="fieldError(form.controls.additionalInfo) ? 'true' : null"
+            ></textarea>
+            @if (fieldError(form.controls.additionalInfo); as message) {
+              <p class="field-error">{{ message }}</p>
+            }
+          </div>
+
+          <p class="info-box">
+            O profissional verá o seu <strong>nome</strong> e o seu <strong>celular</strong> (se você informou) para
+            combinar o serviço com você.
+          </p>
+
+          <button class="btn btn-primary btn-block" type="submit" [disabled]="loading()">
+            {{ loading() ? 'Enviando...' : 'Enviar pedido' }}
+          </button>
+        </form>
+      </div>
+    }
+  }
+</div>

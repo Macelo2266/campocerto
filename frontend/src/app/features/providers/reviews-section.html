@@ -1,0 +1,37 @@
+<section aria-labelledby="reviews-title">
+  <h2 id="reviews-title">Avaliações</h2>
+
+  @if (reviews().length === 0 && !loading() && !errorMessage()) {
+    <p class="muted">Este profissional ainda não recebeu avaliações.</p>
+  }
+
+  <ul class="review-list">
+    @for (review of reviews(); track review.id) {
+      <li class="card review">
+        <div class="review-head">
+          <app-rating-stars [average]="review.rating" [count]="1" [compact]="true" />
+          <strong>{{ review.reviewerName }}</strong>
+        </div>
+        <p class="review-meta">{{ review.serviceName }} · {{ formatDate(review.createdAt) }}</p>
+        @if (review.comment) {
+          <p class="review-comment">{{ review.comment }}</p>
+        }
+      </li>
+    }
+  </ul>
+
+  @if (loading()) {
+    <app-loading-state message="Carregando avaliações..." />
+  }
+
+  @if (errorMessage(); as message) {
+    <div class="alert alert-error" role="alert">
+      <p>{{ message }}</p>
+      <button type="button" class="btn btn-secondary" (click)="loadMore()">Tentar de novo</button>
+    </div>
+  }
+
+  @if (hasMore() && !loading() && !errorMessage()) {
+    <button type="button" class="btn btn-secondary" (click)="loadMore()">Ver mais avaliações</button>
+  }
+</section>

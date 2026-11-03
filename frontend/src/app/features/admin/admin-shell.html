@@ -1,0 +1,19 @@
+<div class="container page-section">
+  <h1>Administração</h1>
+
+  <nav class="admin-nav" aria-label="Seções da administração">
+    <ul>
+      <li>
+        <a routerLink="/admin" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]="{ exact: true }">
+          Resumo
+        </a>
+      </li>
+      <li><a routerLink="/admin/usuarios" routerLinkActive="active" ariaCurrentWhenActive="page">Usuários</a></li>
+      <li><a routerLink="/admin/avaliacoes" routerLinkActive="active" ariaCurrentWhenActive="page">Avaliações</a></li>
+      <li><a routerLink="/admin/solicitacoes" routerLinkActive="active" ariaCurrentWhenActive="page">Solicitações</a></li>
+      <li><a routerLink="/admin/categorias" routerLinkActive="active" ariaCurrentWhenActive="page">Categorias</a></li>
+    </ul>
+  </nav>
+
+  <router-outlet />
+</div>

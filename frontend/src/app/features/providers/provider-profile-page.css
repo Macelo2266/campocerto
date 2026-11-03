@@ -1,0 +1,23 @@
+.profile { display: grid; gap: 1rem; }
+
+.profile-header h1 { margin-bottom: 0.25rem; }
+.profile-header p { margin: 0.35rem 0; }
+.city { color: var(--muted); }
+
+.profile-section h2 { margin-top: 0; }
+
+/* Texto do usuário: preserva quebras de linha, mas nunca é interpretado como HTML */
+.description { margin: 0; white-space: pre-line; overflow-wrap: anywhere; }
+
+.price-list { margin: 0; padding: 0; list-style: none; }
+
+.price-list li {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.25rem 1rem;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.price-list li:last-child { border-bottom: 0; }

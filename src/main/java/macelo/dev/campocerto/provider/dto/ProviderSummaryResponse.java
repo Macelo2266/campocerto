@@ -10,7 +10,9 @@ public record ProviderSummaryResponse(
         String city,
         String shortDescription,
         List<String> categories,
-        boolean available
+        boolean available,
+        Double ratingAverage,
+        int ratingCount
 ) {
 
     private static final int MAX_DESCRIPTION = 160;
@@ -27,7 +29,9 @@ public record ProviderSummaryResponse(
                 profile.getCity(),
                 shorten(profile.getDescription()),
                 categories,
-                profile.isAvailable()
+                profile.isAvailable(),
+                ProviderProfileResponse.averageOf(profile),
+                profile.getRatingCount()
         );
     }
 

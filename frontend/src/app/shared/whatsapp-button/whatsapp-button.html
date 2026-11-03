@@ -1,0 +1,23 @@
+@if (link(); as contact) {
+  <div class="preview card">
+    <h3>Mensagem que será enviada</h3>
+    <p class="message">{{ contact.message }}</p>
+    <p class="hint">
+      Você vai conversar pelo WhatsApp. Para ficar tudo registrado, peça o orçamento também aqui no CampoCerto.
+    </p>
+    <div class="actions">
+      <a class="btn btn-primary" [href]="contact.url" target="_blank" rel="noopener noreferrer">
+        Abrir o WhatsApp<span class="sr-only"> (abre em uma nova aba)</span>
+      </a>
+      <button type="button" class="btn btn-secondary" (click)="close()">Fechar</button>
+    </div>
+  </div>
+} @else {
+  <button type="button" class="btn btn-secondary" (click)="prepare()" [disabled]="loading()">
+    {{ loading() ? 'Preparando...' : 'Conversar pelo WhatsApp' }}
+  </button>
+}
+
+@if (errorMessage(); as message) {
+  <div class="alert alert-error" role="alert">{{ message }}</div>
+}

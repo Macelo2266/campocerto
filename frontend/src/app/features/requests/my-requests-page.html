@@ -1,0 +1,63 @@
+@let result = results.state();
+
+<section class="container page-section">
+  <h1>Minhas solicitações</h1>
+
+  <nav aria-label="Filtrar por situação">
+    <ul class="chips filter-chips">
+      @for (filter of filters; track filter.label) {
+        <li>
+          <a
+            class="chip chip-link"
+            routerLink="/solicitacoes"
+            [queryParams]="{ status: filter.value, page: null }"
+            [attr.aria-current]="query().status === filter.value ? 'true' : null"
+          >
+            {{ filter.label }}
+          </a>
+        </li>
+      }
+    </ul>
+  </nav>
+
+  @if (result.status === 'loading') {
+    <app-loading-state message="Carregando suas solicitações..." />
+  } @else if (result.status === 'error') {
+    <app-error-state [message]="result.error.message" (retry)="results.reload()" />
+  } @else if (result.data.content.length === 0) {
+    @if (query().status !== null || query().page > 1) {
+      <app-empty-state title="Nada por aqui" message="Você não tem solicitações nesta situação.">
+        <a class="btn btn-secondary" routerLink="/solicitacoes">Ver todas</a>
+      </app-empty-state>
+    } @else {
+      <app-empty-state
+        title="Você ainda não pediu nenhum orçamento"
+        message="Encontre um profissional e peça um orçamento. Depois você acompanha tudo por aqui."
+      >
+        <a class="btn btn-primary" routerLink="/profissionais">Encontrar profissionais</a>
+      </app-empty-state>
+    }
+  } @else {
+    <ul class="request-list">
+      @for (item of result.data.content; track item.id) {
+        <li class="card card-clickable">
+          <div class="request-head">
+            <h2 class="request-title">
+              <a class="stretched" [routerLink]="['/solicitacoes', item.id]">{{ item.category.name }}</a>
+            </h2>
+            <app-status-badge [status]="item.status" />
+          </div>
+          <p class="request-meta">
+            {{ item.provider.professionalName }} · {{ item.city }}
+            @if (item.desiredDate) {
+              · Data desejada: {{ formatDateOnly(item.desiredDate) }}
+            }
+          </p>
+          <p class="request-meta">Enviada em {{ formatDate(item.createdAt) }}</p>
+        </li>
+      }
+    </ul>
+
+    <app-pagination [page]="query().page" [totalPages]="result.data.totalPages" />
+  }
+</section>

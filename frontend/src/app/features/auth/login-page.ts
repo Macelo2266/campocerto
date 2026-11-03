@@ -2,6 +2,7 @@ import { Component, inject, input, signal } from '@angular/core';
 import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 
+import { homeRouteFor } from '../../core/auth/home-route';
 import { AuthService } from '../../core/auth/auth.service';
 import { applyServerErrors, fieldError } from '../../core/forms/form-errors';
 import { toApiError } from '../../core/http/api-error';
@@ -41,7 +42,8 @@ export class LoginPage {
     this.errorMessage.set(null);
 
     this.auth.login(this.form.getRawValue()).subscribe({
-      next: () => void this.router.navigateByUrl(safeReturnUrl(this.returnUrl())),
+      next: (user) =>
+        void this.router.navigateByUrl(safeReturnUrl(this.returnUrl(), homeRouteFor(user.role))),
       error: (error: unknown) => {
         const apiError = toApiError(error);
         applyServerErrors(this.form, apiError.fieldErrors);

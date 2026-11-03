@@ -1,0 +1,63 @@
+@let state = stats.state();
+
+<h2 class="sr-only">Resumo da plataforma</h2>
+
+@if (state.status === 'loading') {
+  <app-loading-state message="Carregando indicadores..." />
+} @else if (state.status === 'error') {
+  <app-error-state [message]="state.error.message" (retry)="stats.reload()" />
+} @else {
+  @let s = state.data;
+
+  <p>
+    <button type="button" class="btn btn-secondary btn-small" (click)="stats.reload()">Atualizar números</button>
+  </p>
+
+  <section class="stat-section" aria-labelledby="people-title">
+    <h3 id="people-title">Pessoas</h3>
+    <dl class="stat-grid">
+      <div class="stat"><dt>Total de contas</dt><dd>{{ fmt(s.users.total) }}</dd></div>
+      <div class="stat"><dt>Agricultores</dt><dd>{{ fmt(s.users.farmers) }}</dd></div>
+      <div class="stat"><dt>Prestadores</dt><dd>{{ fmt(s.users.providers) }}</dd></div>
+      <div class="stat"><dt>Administradores</dt><dd>{{ fmt(s.users.admins) }}</dd></div>
+      <div class="stat"><dt>Contas ativas</dt><dd>{{ fmt(s.users.active) }}</dd></div>
+      <div class="stat"><dt>Suspensas</dt><dd>{{ fmt(s.users.suspended) }}</dd></div>
+      <div class="stat"><dt>Bloqueadas</dt><dd>{{ fmt(s.users.blocked) }}</dd></div>
+    </dl>
+    <p><a routerLink="/admin/usuarios">Ver usuários</a></p>
+  </section>
+
+  <section class="stat-section" aria-labelledby="providers-title">
+    <h3 id="providers-title">Prestadores</h3>
+    <dl class="stat-grid">
+      <div class="stat"><dt>Perfis criados</dt><dd>{{ fmt(s.providers.total) }}</dd></div>
+      <div class="stat"><dt>Recebendo pedidos</dt><dd>{{ fmt(s.providers.available) }}</dd></div>
+      <div class="stat"><dt>Com pedidos pausados</dt><dd>{{ fmt(s.providers.total - s.providers.available) }}</dd></div>
+      <div class="stat"><dt>Cadastrados sem perfil</dt><dd>{{ fmt(providersWithoutProfile(s)) }}</dd></div>
+    </dl>
+  </section>
+
+  <section class="stat-section" aria-labelledby="requests-title">
+    <h3 id="requests-title">Solicitações</h3>
+    <dl class="stat-grid">
+      <div class="stat"><dt>Total</dt><dd>{{ fmt(totalRequests(s)) }}</dd></div>
+      @for (status of statuses; track status) {
+        <div class="stat"><dt>{{ statusLabels[status] }}</dt><dd>{{ fmt(s.serviceRequests[status]) }}</dd></div>
+      }
+    </dl>
+    <p><a routerLink="/admin/solicitacoes">Ver solicitações</a></p>
+  </section>
+
+  <section class="stat-section" aria-labelledby="reviews-title">
+    <h3 id="reviews-title">Avaliações</h3>
+    <dl class="stat-grid">
+      <div class="stat"><dt>Visíveis</dt><dd>{{ fmt(s.reviews.visible) }}</dd></div>
+      <div class="stat"><dt>Ocultas</dt><dd>{{ fmt(s.reviews.hidden) }}</dd></div>
+      <div class="stat">
+        <dt>Nota média</dt>
+        <dd>{{ s.reviews.averageRating === null ? '—' : rating(s.reviews.averageRating) }}</dd>
+      </div>
+    </dl>
+    <p><a routerLink="/admin/avaliacoes">Moderar avaliações</a></p>
+  </section>
+}

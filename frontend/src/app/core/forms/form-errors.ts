@@ -17,6 +17,8 @@ export function fieldError(control: AbstractControl | null): string | null {
     case 'email': return 'Informe um e-mail válido, como nome@exemplo.com.';
     case 'minlength': return `Use pelo menos ${value.requiredLength} caracteres.`;
     case 'maxlength': return `Use no máximo ${value.requiredLength} caracteres.`;
+    case 'past': return 'A data não pode estar no passado.';
+    case 'whatsapp': return 'Informe um celular válido com DDD, como (83) 99999-0000.';
     case 'server': return String(value);
     default: return 'Valor inválido.';
   }

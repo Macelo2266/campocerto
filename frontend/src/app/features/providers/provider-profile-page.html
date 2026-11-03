@@ -1,0 +1,71 @@
+@let result = profile.state();
+
+<div class="container page-section">
+  <a class="link-back" routerLink="/profissionais">‹ Voltar à busca</a>
+
+  @if (result.status === 'loading') {
+    <app-loading-state message="Carregando perfil..." />
+  } @else if (result.status === 'error') {
+    @if (result.error.status === 404) {
+      <app-empty-state title="Profissional não encontrado" message="Este perfil não existe ou não está mais disponível.">
+        <a class="btn btn-primary" routerLink="/profissionais">Ver outros profissionais</a>
+      </app-empty-state>
+    } @else {
+      <app-error-state [message]="result.error.message" (retry)="profile.reload()" />
+    }
+  } @else {
+    @let provider = result.data;
+
+    <article class="profile">
+      <header class="card profile-header">
+        <h1>{{ provider.professionalName }}</h1>
+        <p class="city"><span aria-hidden="true">📍</span> {{ provider.city }}</p>
+        <app-rating-stars [average]="provider.ratingAverage" [count]="provider.ratingCount" />
+
+        @if (provider.available) {
+          <p><span class="badge badge-ok">Disponível para novos pedidos</span></p>
+        } @else {
+          <div class="alert alert-info" role="status">
+            Este profissional não está recebendo novos pedidos no momento.
+          </div>
+        }
+      </header>
+
+      <app-provider-contact [provider]="provider" />
+
+      @if (provider.description) {
+        <section class="card profile-section" aria-labelledby="about-title">
+          <h2 id="about-title">Sobre</h2>
+          <p class="description">{{ provider.description }}</p>
+        </section>
+      }
+
+      <section class="card profile-section" aria-labelledby="services-title">
+        <h2 id="services-title">Serviços e preços</h2>
+        <ul class="price-list">
+          @for (offering of provider.offerings; track offering.categoryId) {
+            <li>
+              <span>{{ offering.categoryName }}</span>
+              @if (offering.priceInfo) {
+                <strong>{{ offering.priceInfo }}</strong>
+              } @else {
+                <span class="muted">Preço a combinar</span>
+              }
+            </li>
+          }
+        </ul>
+      </section>
+
+      <section class="card profile-section" aria-labelledby="areas-title">
+        <h2 id="areas-title">Cidades atendidas</h2>
+        <ul class="chips">
+          @for (area of provider.serviceAreas; track area) {
+            <li class="chip">{{ area }}</li>
+          }
+        </ul>
+      </section>
+
+      <app-reviews-section [providerId]="provider.id" />
+    </article>
+  }
+</div>

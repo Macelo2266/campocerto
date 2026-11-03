@@ -1,0 +1,157 @@
+@let state = request.state();
+
+<div class="container page-section">
+  @if (auth.role() === 'FARMER') {
+    <a class="link-back" routerLink="/solicitacoes">‹ Minhas solicitações</a>
+  } @else if (auth.role() === 'PROVIDER') {
+    <a class="link-back" routerLink="/painel">‹ Painel do prestador</a>
+  }
+
+  @if (state.status === 'loading' && !current()) {
+    <app-loading-state message="Carregando solicitação..." />
+  } @else if (state.status === 'error') {
+    @if (state.error.status === 404) {
+      <app-empty-state title="Solicitação não encontrada" message="Ela não existe ou não está disponível para você.">
+        <a class="btn btn-primary" routerLink="/">Voltar ao início</a>
+      </app-empty-state>
+    } @else {
+      <app-error-state [message]="state.error.message" (retry)="request.reload()" />
+    }
+  } @else if (current(); as r) {
+    @if (criada()) {
+      <div class="alert alert-info" role="status">
+        Pedido enviado! Agora é só aguardar a resposta do profissional. Você pode acompanhar por aqui.
+      </div>
+    }
+
+    <article class="detail">
+      <header class="card">
+        <h1>{{ r.category.name }}</h1>
+        <p class="status-line">
+          <app-status-badge [status]="r.status" />
+          <span class="muted">{{ statusHelp[r.status] }}</span>
+        </p>
+      </header>
+
+      @if (actionError(); as message) {
+        <div class="alert alert-error" role="alert">{{ message }}</div>
+      }
+
+      @if (r.availableTransitions.length > 0) {
+        <section class="card" aria-labelledby="actions-title">
+          <h2 id="actions-title">O que você pode fazer agora</h2>
+
+          <div class="actions">
+            @for (target of r.availableTransitions; track target) {
+              <button
+                type="button"
+                class="btn"
+                [class.btn-primary]="target !== 'CANCELADA'"
+                [class.btn-secondary]="target === 'CANCELADA'"
+                [disabled]="acting()"
+                (click)="choose(r, target)"
+              >
+                {{ actionLabel(target) }}
+              </button>
+            }
+          </div>
+
+          <div aria-live="polite">
+            @if (confirming(); as target) {
+              <div class="confirm alert alert-info">
+                <p>
+                  <strong>Tem certeza?</strong>
+                  @if (target === 'CANCELADA') {
+                    A solicitação será cancelada e não poderá ser reaberta.
+                  } @else {
+                    A solicitação será marcada como concluída e não poderá ser alterada.
+                  }
+                </p>
+                <div class="actions">
+                  <button type="button" class="btn btn-primary" [disabled]="acting()" (click)="apply(r, target)">
+                    Sim, {{ actionLabel(target).toLowerCase() }}
+                  </button>
+                  <button type="button" class="btn btn-secondary" (click)="confirming.set(null)">Não, voltar</button>
+                </div>
+              </div>
+            }
+          </div>
+        </section>
+      }
+
+      <section class="card" aria-labelledby="data-title">
+        <h2 id="data-title">Dados do pedido</h2>
+        <dl class="data-list">
+          <dt>Profissional</dt>
+          <dd>
+            <a [routerLink]="['/profissionais', r.provider.id]">{{ r.provider.professionalName }}</a>
+          </dd>
+
+          <dt>Município</dt>
+          <dd>{{ r.city }}</dd>
+
+          <dt>Data desejada</dt>
+          <dd>{{ r.desiredDate ? formatDateOnly(r.desiredDate) : 'Sem data definida' }}</dd>
+
+          <dt>Enviada em</dt>
+          <dd>{{ formatDate(r.createdAt) }}</dd>
+
+          <dt>Atualizada em</dt>
+          <dd>{{ formatDate(r.updatedAt) }}</dd>
+        </dl>
+
+        <h3>Descrição do trabalho</h3>
+        <p class="pre-line">{{ r.description }}</p>
+
+        @if (r.additionalInfo) {
+          <h3>Informações adicionais</h3>
+          <p class="pre-line">{{ r.additionalInfo }}</p>
+        }
+      </section>
+
+      @if (r.requester; as who) {
+        <section class="card" aria-labelledby="who-title">
+          <h2 id="who-title">Quem pediu</h2>
+          <p>{{ who.name }}</p>
+          @if (phoneHref(who.phone); as href) {
+            <p><a [href]="href">Ligar para {{ who.phone }}</a></p>
+          } @else {
+            <p class="muted">O cliente não informou celular.</p>
+          }
+        </section>
+      }
+
+      @if (auth.role() === 'FARMER' && isOpen(r.status)) {
+        <section class="card" aria-labelledby="talk-title">
+          <h2 id="talk-title">Falar com o profissional</h2>
+          <app-whatsapp-button [providerId]="r.provider.id" [categoryId]="r.category.id" />
+        </section>
+      }
+
+      @if (r.status === 'CONCLUIDA') {
+        @let reviewState = review.state();
+
+        <section class="card" aria-labelledby="review-title">
+          <h2 id="review-title">Avaliação do serviço</h2>
+
+          @if (reviewState.status === 'loading') {
+            <app-loading-state message="Carregando avaliação..." />
+          } @else if (reviewState.status === 'error') {
+            <app-error-state [message]="reviewState.error.message" (retry)="review.reload()" />
+          } @else if (reviewState.status === 'ready' && reviewState.data; as saved) {
+            <app-rating-stars [average]="saved.rating" [count]="1" [compact]="true" />
+            @if (saved.comment) {
+              <p class="pre-line">{{ saved.comment }}</p>
+            }
+            <p class="muted">Avaliado em {{ formatDate(saved.createdAt) }}</p>
+          } @else if (auth.role() === 'FARMER') {
+            <p>Conte como foi o serviço. Sua nota ajuda outros agricultores a escolher.</p>
+            <app-review-form [requestId]="r.id" (changed)="refresh()" />
+          } @else {
+            <p class="muted">O cliente ainda não avaliou este serviço.</p>
+          }
+        </section>
+      }
+    </article>
+  }
+</div>

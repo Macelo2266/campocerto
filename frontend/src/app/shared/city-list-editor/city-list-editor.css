@@ -1,0 +1,19 @@
+.add-row { display: flex; gap: 0.5rem; }
+.add-row .input { flex: 1; min-width: 0; }
+
+.chips { margin-top: 0.75rem; }
+
+.chip-removable { display: inline-flex; align-items: center; gap: 0.25rem; padding-right: 0.2rem; }
+
+.chip-remove {
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  border: 0;
+  border-radius: 999px;
+  background: none;
+  color: var(--green-900);
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.chip-remove:hover { background: var(--green-100); }

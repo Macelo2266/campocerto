@@ -1,0 +1,48 @@
+@if (errorMessage(); as message) {
+  <div class="alert alert-error" role="alert">{{ message }}</div>
+}
+
+<form [formGroup]="form" (ngSubmit)="submit()" novalidate [attr.aria-busy]="loading()">
+  <fieldset class="field">
+    <legend>Qual nota você dá para o serviço?</legend>
+
+    @for (option of options; track option.value) {
+      <label class="choice">
+        <input
+          type="radio"
+          formControlName="rating"
+          [value]="option.value"
+          [attr.aria-invalid]="form.controls.rating.invalid && form.controls.rating.touched ? 'true' : null"
+        />
+        <span>{{ option.label }}</span>
+      </label>
+    }
+
+    @if (form.controls.rating.invalid && form.controls.rating.touched) {
+      <p class="field-error">Escolha uma nota de 1 a 5.</p>
+    }
+  </fieldset>
+
+  <div class="field">
+    <label for="review-comment">Comentário (opcional)</label>
+    <textarea
+      id="review-comment"
+      class="input"
+      formControlName="comment"
+      rows="4"
+      maxlength="1000"
+      aria-describedby="review-comment-hint"
+    ></textarea>
+    <p id="review-comment-hint" class="hint">
+      Conte como foi o serviço. Não escreva telefone nem dados pessoais. Sua avaliação aparece no perfil do
+      profissional, com o seu primeiro nome.
+    </p>
+    @if (fieldError(form.controls.comment); as message) {
+      <p class="field-error">{{ message }}</p>
+    }
+  </div>
+
+  <button class="btn btn-primary" type="submit" [disabled]="loading()">
+    {{ loading() ? 'Enviando...' : 'Enviar avaliação' }}
+  </button>
+</form>

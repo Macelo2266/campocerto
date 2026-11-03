@@ -1,0 +1,19 @@
+@if (hasRating()) {
+  <span class="rating">
+    <span class="sr-only">
+      Nota {{ averageText() }} de 5@if (!compact()) {, com {{ countText() }}}
+    </span>
+
+    <span class="stars" aria-hidden="true">
+      @for (star of stars; track star) {
+        <span [class.on]="star <= filled()">★</span>
+      }
+    </span>
+
+    @if (!compact()) {
+      <span class="rating-text" aria-hidden="true"><strong>{{ averageText() }}</strong> ({{ countText() }})</span>
+    }
+  </span>
+} @else {
+  <span class="badge badge-new">Novo na plataforma</span>
+}

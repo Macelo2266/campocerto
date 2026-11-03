@@ -1,0 +1,114 @@
+@let result = results.state();
+
+<h2>Avaliações</h2>
+<p class="hint">
+  Oculte avaliações com ofensas, dados pessoais ou conteúdo falso. Uma avaliação oculta sai do perfil público e da nota
+  do prestador, mas continua guardada e pode ser restaurada.
+</p>
+
+<nav aria-label="Filtrar avaliações por situação">
+  <ul class="chips filter-chips">
+    @for (filter of filters; track filter.label) {
+      <li>
+        <a
+          class="chip chip-link"
+          routerLink="/admin/avaliacoes"
+          [queryParams]="{ status: filter.value, page: null }"
+          [attr.aria-current]="query().status === filter.value ? 'true' : null"
+        >
+          {{ filter.label }}
+        </a>
+      </li>
+    }
+  </ul>
+</nav>
+
+<div role="status">
+  @if (announcement(); as text) {
+    <div class="alert alert-info">{{ text }}</div>
+  }
+</div>
+
+@if (pageError(); as message) {
+  <div class="alert alert-error" role="alert">{{ message }}</div>
+}
+
+@if (result.status === 'loading') {
+  <app-loading-state message="Carregando avaliações..." />
+} @else if (result.status === 'error') {
+  <app-error-state [message]="result.error.message" (retry)="results.reload()" />
+} @else if (result.data.content.length === 0) {
+  <app-empty-state
+    title="Nenhuma avaliação aqui"
+    [message]="query().status === 'HIDDEN' ? 'Não há avaliações ocultas.' : 'Ainda não há avaliações para mostrar.'"
+  />
+} @else {
+  <ul class="request-list">
+    @for (review of rows(); track review.id) {
+      <li class="card">
+        <div class="request-head">
+          <h3 class="request-title" tabindex="-1" [id]="'review-' + review.id">
+            Avaliação {{ review.id }}
+          </h3>
+          <span [class]="'badge ' + statusBadge[review.status]">{{ statusLabels[review.status] }}</span>
+        </div>
+
+        <p class="review-line">
+          <app-rating-stars [average]="review.rating" [count]="1" [compact]="true" />
+        </p>
+
+        @if (review.comment) {
+          <p class="pre-line">{{ review.comment }}</p>
+        } @else {
+          <p class="muted">Sem comentário.</p>
+        }
+
+        <p class="request-meta">
+          Por {{ review.reviewerName }} sobre
+          <a [routerLink]="['/profissionais', review.providerId]">{{ review.providerName }}</a>
+          · Solicitação nº {{ review.serviceRequestId }} · {{ formatDate(review.createdAt) }}
+        </p>
+
+        <div class="actions">
+          @if (review.status === 'VISIBLE') {
+            <button
+              type="button"
+              class="btn btn-secondary btn-small"
+              [attr.aria-label]="'Ocultar avaliação ' + review.id"
+              (click)="request(review, 'HIDDEN')"
+            >
+              Ocultar
+            </button>
+          } @else {
+            <button
+              type="button"
+              class="btn btn-secondary btn-small"
+              [attr.aria-label]="'Restaurar avaliação ' + review.id"
+              [disabled]="busy()"
+              (click)="request(review, 'VISIBLE')"
+            >
+              Restaurar
+            </button>
+          }
+        </div>
+      </li>
+    }
+  </ul>
+
+  @if (rows().length > 0 && query().status !== null) {
+    <p class="hint">As alterações aparecem no cartão na hora. A lista filtrada só se ajusta ao recarregar.</p>
+  }
+
+  <app-pagination [page]="query().page" [totalPages]="result.data.totalPages" />
+}
+
+<app-confirm-dialog
+  [title]="'Ocultar a avaliação ' + (pending()?.id ?? '') + '?'"
+  message="A avaliação deixa de aparecer no perfil do prestador e sai do cálculo da nota dele. Ela fica guardada e você pode restaurá-la depois."
+  confirmLabel="Sim, ocultar"
+  [danger]="true"
+  [busy]="busy()"
+  [error]="dialogError()"
+  (confirmed)="confirmPending()"
+  (closed)="onDialogClosed()"
+/>

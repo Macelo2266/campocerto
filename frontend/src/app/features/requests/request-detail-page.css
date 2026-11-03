@@ -1,0 +1,9 @@
+.detail { display: grid; gap: 1rem; }
+.detail h1 { margin-bottom: 0.5rem; }
+.detail h2 { margin-top: 0; }
+.detail h3 { margin: 1rem 0 0.25rem; font-size: 1.05rem; }
+
+.status-line { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.75rem; margin: 0; }
+
+.confirm { margin: 1rem 0 0; }
+.confirm p { margin: 0 0 0.75rem; }

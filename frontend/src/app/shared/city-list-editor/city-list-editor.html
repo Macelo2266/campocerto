@@ -1,0 +1,43 @@
+<div class="field city-list-editor">
+  <label [for]="inputId() + '-state'">Estado</label>
+  <select [id]="inputId() + '-state'" class="input" [value]="selectedState()" (change)="onStateChange($any($event.target).value)">
+    <option value="">Selecione o estado</option>
+    @for (state of states(); track state.id) {
+      <option [value]="state.sigla">{{ state.nome }} ({{ state.sigla }})</option>
+    }
+  </select>
+
+  <label [for]="inputId()">Cidade que você atende</label>
+  <div class="add-row">
+    <select
+      [id]="inputId()"
+      class="input"
+      [disabled]="!selectedState() || loadingCities()"
+      [value]="selectedCity()"
+      (change)="selectedCity.set($any($event.target).value)"
+    >
+      <option value="">{{ loadingCities() ? 'Carregando municípios...' : 'Selecione a cidade' }}</option>
+      @for (city of municipalities(); track city.id) {
+        <option [value]="city.nome">{{ city.nome }}</option>
+      }
+    </select>
+    <button type="button" class="btn btn-secondary" (click)="add()">Adicionar</button>
+  </div>
+  <p class="hint">Escolha o estado e depois a cidade. Você pode adicionar cidades de outros estados repetindo o processo.</p>
+  @if (locationsError(); as message) { <p class="field-error" role="alert">{{ message }}</p> }
+  @if (errorMessage(); as message) { <p class="field-error" role="alert">{{ message }}</p> }
+
+  @if (cities().length > 0) {
+    <ul class="chips" aria-label="Cidades adicionadas">
+      @for (city of cities(); track city) {
+        <li class="chip chip-removable">
+          {{ city }}
+          <button type="button" class="chip-remove" [attr.aria-label]="'Remover ' + city" (click)="remove(city)">
+            <span aria-hidden="true">✕</span>
+          </button>
+        </li>
+      }
+    </ul>
+  }
+  <p class="sr-only" role="status">{{ statusMessage() }}</p>
+</div>

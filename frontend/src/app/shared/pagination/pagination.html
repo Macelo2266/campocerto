@@ -1,0 +1,25 @@
+@if (totalPages() > 1) {
+  <nav class="pagination" aria-label="Paginação dos resultados">
+    @if (hasPrevious()) {
+      <a class="btn btn-secondary" rel="prev" [routerLink]="[]" [queryParams]="paramsFor(page() - 1)" queryParamsHandling="merge">
+        <span aria-hidden="true">‹&nbsp;</span>Anterior
+      </a>
+    } @else {
+      <span class="btn btn-secondary is-disabled" aria-disabled="true">
+        <span aria-hidden="true">‹&nbsp;</span>Anterior
+      </span>
+    }
+
+    <span class="page-info" aria-current="page">Página {{ page() }} de {{ totalPages() }}</span>
+
+    @if (hasNext()) {
+      <a class="btn btn-secondary" rel="next" [routerLink]="[]" [queryParams]="paramsFor(page() + 1)" queryParamsHandling="merge">
+        Próxima<span aria-hidden="true">&nbsp;›</span>
+      </a>
+    } @else {
+      <span class="btn btn-secondary is-disabled" aria-disabled="true">
+        Próxima<span aria-hidden="true">&nbsp;›</span>
+      </span>
+    }
+  </nav>
+}

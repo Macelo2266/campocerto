@@ -1,0 +1,42 @@
+@if (provider().available) {
+  <section class="card" aria-labelledby="contact-title">
+    <h2 id="contact-title">Contratar este profissional</h2>
+
+    @if (!auth.isLoggedIn()) {
+      <p>Para pedir um orçamento ou conversar pelo WhatsApp, entre na sua conta.</p>
+      <div class="actions">
+        <a class="btn btn-primary" routerLink="/entrar" [queryParams]="{ returnUrl: returnUrl() }">Entrar</a>
+        <a class="btn btn-secondary" routerLink="/cadastrar" [queryParams]="{ returnUrl: returnUrl() }">Criar conta</a>
+      </div>
+    } @else if (auth.role() === 'FARMER') {
+      <div class="field">
+        <label for="contact-service">Qual serviço você procura? (opcional)</label>
+        <select #service id="contact-service" class="input" (change)="selectService(service.value)">
+          <option value="">Escolher depois</option>
+          @for (offering of provider().offerings; track offering.categoryId) {
+            <option [value]="offering.categoryId">{{ offering.categoryName }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="actions">
+        <a
+          class="btn btn-primary"
+          [routerLink]="['/profissionais', provider().id, 'solicitar']"
+          [queryParams]="{ servico: selectedService() }"
+        >
+          Pedir orçamento
+        </a>
+      </div>
+
+      <div class="whatsapp">
+        <app-whatsapp-button [providerId]="provider().id" [categoryId]="selectedService()" />
+      </div>
+    } @else {
+      <p class="muted">
+        Contas de prestador e de administrador não pedem orçamentos. Para contratar um serviço, use uma conta de
+        agricultor.
+      </p>
+    }
+  </section>
+}

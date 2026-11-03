@@ -1,0 +1,100 @@
+@let categoryList = categories.state();
+@let cityList = cities.state();
+@let result = results.state();
+
+<section class="container page-section">
+  <h1>Encontrar profissionais</h1>
+
+  <form class="filters card" [formGroup]="form" (ngSubmit)="search()" role="search" aria-label="Buscar profissionais">
+    <div class="field">
+      <label for="q">O que você precisa?</label>
+      <input
+        id="q"
+        class="input"
+        type="search"
+        formControlName="q"
+        maxlength="100"
+        autocomplete="off"
+        placeholder="Ex.: cerca, roçagem, trator"
+      />
+    </div>
+
+    <div class="field">
+      <label for="category">Serviço</label>
+      <select id="category" class="input" formControlName="category">
+        <option value="">Todos os serviços</option>
+        @if (categoryList.status === 'ready') {
+          @for (item of categoryList.data; track item.id) {
+            <option [value]="item.id">{{ item.name }}</option>
+          }
+        }
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="city">Cidade</label>
+      <select id="city" class="input" formControlName="city">
+        <option value="">Todas as cidades</option>
+        @if (cityList.status === 'ready') {
+          @if (cityMissing(cityList.data, query().city)) {
+            <option [value]="query().city">{{ query().city }}</option>
+          }
+          @for (name of cityList.data; track name) {
+            <option [value]="name">{{ name }}</option>
+          }
+        }
+      </select>
+    </div>
+
+    <div class="field">
+      <label for="sort">Ordenar por</label>
+      <select id="sort" class="input" formControlName="sort">
+        @for (option of sortOptions; track option.value) {
+          <option [value]="option.value">{{ option.label }}</option>
+        }
+      </select>
+    </div>
+
+    <div class="filter-actions">
+      <button class="btn btn-primary" type="submit">Buscar</button>
+      @if (hasFilters()) {
+        <button class="btn btn-secondary" type="button" (click)="clear()">Limpar filtros</button>
+      }
+    </div>
+  </form>
+
+  <p class="results-count" role="status">
+    @if (result.status === 'ready') {
+      {{ countText(result.data.totalElements) }}
+    }
+  </p>
+
+  @if (result.status === 'loading') {
+    <app-loading-state message="Buscando profissionais..." />
+  } @else if (result.status === 'error') {
+    <app-error-state [message]="result.error.message" (retry)="results.reload()" />
+  } @else if (result.data.content.length === 0) {
+    @if (result.data.totalElements > 0) {
+      <app-empty-state title="Esta página não existe" message="Os resultados terminaram antes dela.">
+        <a class="btn btn-primary" routerLink="/profissionais" queryParamsHandling="merge" [queryParams]="{ page: null }">
+          Ver a primeira página
+        </a>
+      </app-empty-state>
+    } @else {
+      <app-empty-state
+        title="Nenhum profissional encontrado"
+        message="Tente outro serviço ou outra cidade, ou limpe os filtros para ver todos os profissionais."
+      >
+        <button type="button" class="btn btn-secondary" (click)="clear()">Limpar filtros</button>
+      </app-empty-state>
+    }
+  } @else {
+    <h2 class="sr-only">Resultados da busca</h2>
+    <ul class="provider-grid">
+      @for (provider of result.data.content; track provider.id) {
+        <li><app-provider-card [provider]="provider" /></li>
+      }
+    </ul>
+    <app-pagination [page]="query().page" [totalPages]="result.data.totalPages" />
+  }
+</section>

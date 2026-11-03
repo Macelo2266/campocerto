@@ -1,0 +1,145 @@
+@let result = results.state();
+
+<h2>Usuários</h2>
+
+<form class="filters card" [formGroup]="form" (ngSubmit)="search()" role="search" aria-label="Buscar usuários">
+  <div class="field">
+    <label for="user-q">Nome ou e-mail</label>
+    <input id="user-q" class="input" type="search" formControlName="q" maxlength="100" autocomplete="off" />
+  </div>
+
+  <div class="field">
+    <label for="user-role">Tipo de conta</label>
+    <select id="user-role" class="input" formControlName="role">
+      <option value="">Todos</option>
+      @for (option of roleOptions; track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="field">
+    <label for="user-status">Situação</label>
+    <select id="user-status" class="input" formControlName="status">
+      <option value="">Todas</option>
+      @for (option of statusOptions; track option.value) {
+        <option [value]="option.value">{{ option.label }}</option>
+      }
+    </select>
+  </div>
+
+  <div class="filter-actions">
+    <button class="btn btn-primary" type="submit">Buscar</button>
+    @if (hasFilters()) {
+      <button class="btn btn-secondary" type="button" (click)="clear()">Limpar filtros</button>
+    }
+  </div>
+</form>
+
+<!-- Região fixa: o leitor de tela anuncia o texto que aparece aqui dentro -->
+<div role="status">
+  @if (announcement(); as text) {
+    <div class="alert alert-info">{{ text }}</div>
+  }
+</div>
+
+@if (pageError(); as message) {
+  <div class="alert alert-error" role="alert">{{ message }}</div>
+}
+
+@if (result.status === 'loading') {
+  <app-loading-state message="Carregando usuários..." />
+} @else if (result.status === 'error') {
+  <app-error-state [message]="result.error.message" (retry)="results.reload()" />
+} @else if (result.data.content.length === 0) {
+  <app-empty-state title="Nenhum usuário encontrado" message="Tente outro nome ou limpe os filtros.">
+    <button type="button" class="btn btn-secondary" (click)="clear()">Limpar filtros</button>
+  </app-empty-state>
+} @else {
+  <p class="results-count">{{ result.data.totalElements }} usuário(s) encontrado(s)</p>
+
+  <div class="table-wrap" role="region" aria-label="Lista de usuários" tabindex="0">
+    <table class="table">
+      <caption class="sr-only">Usuários da plataforma</caption>
+      <thead>
+        <tr>
+          <th scope="col">Nome</th>
+          <th scope="col">E-mail</th>
+          <th scope="col">Celular</th>
+          <th scope="col">Tipo</th>
+          <th scope="col">Situação</th>
+          <th scope="col">Cadastro</th>
+          <th scope="col">Ações</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (user of rows(); track user.id) {
+          <tr>
+            <th scope="row" tabindex="-1" [id]="'user-' + user.id">{{ user.name }}</th>
+            <td>{{ user.email }}</td>
+            <td>{{ user.phone ?? '—' }}</td>
+            <td>{{ roleLabels[user.role] }}</td>
+            <td><span [class]="'badge ' + statusBadge[user.status]">{{ statusLabels[user.status] }}</span></td>
+            <td>{{ formatDate(user.createdAt) }}</td>
+            <td>
+              @if (canChange(user)) {
+                <div class="row-actions">
+                  @if (user.status !== 'ACTIVE') {
+                    <button
+                      type="button"
+                      class="btn btn-secondary btn-small"
+                      [attr.aria-label]="'Reativar ' + user.name"
+                      [disabled]="busy()"
+                      (click)="request(user, 'ACTIVE')"
+                    >
+                      Reativar
+                    </button>
+                  }
+                  @if (user.status === 'ACTIVE') {
+                    <button
+                      type="button"
+                      class="btn btn-secondary btn-small"
+                      [attr.aria-label]="'Suspender ' + user.name"
+                      (click)="request(user, 'SUSPENDED')"
+                    >
+                      Suspender
+                    </button>
+                  }
+                  @if (user.status !== 'BLOCKED') {
+                    <button
+                      type="button"
+                      class="btn btn-secondary btn-small"
+                      [attr.aria-label]="'Bloquear ' + user.name"
+                      (click)="request(user, 'BLOCKED')"
+                    >
+                      Bloquear
+                    </button>
+                  }
+                </div>
+              } @else {
+                <span class="muted">{{ whyNot(user) }}</span>
+              }
+            </td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  @if (rows().length > 0 && hasFilters()) {
+    <p class="hint">As alterações aparecem na linha na hora. A lista filtrada só se ajusta na próxima busca.</p>
+  }
+
+  <app-pagination [page]="query().page" [totalPages]="result.data.totalPages" />
+}
+
+<app-confirm-dialog
+  [title]="dialogTitle()"
+  [message]="dialogMessage()"
+  [confirmLabel]="dialogConfirmLabel()"
+  [danger]="true"
+  [busy]="busy()"
+  [error]="dialogError()"
+  (confirmed)="confirmPending()"
+  (closed)="onDialogClosed()"
+/>

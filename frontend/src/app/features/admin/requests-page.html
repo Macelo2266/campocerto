@@ -1,0 +1,66 @@
+@let result = results.state();
+
+<h2>Solicitações da plataforma</h2>
+<p class="hint">Visão somente de leitura, para acompanhar o movimento e apoiar o suporte.</p>
+
+<nav aria-label="Filtrar solicitações por situação">
+  <ul class="chips filter-chips">
+    @for (filter of filters; track filter.label) {
+      <li>
+        <a
+          class="chip chip-link"
+          routerLink="/admin/solicitacoes"
+          [queryParams]="{ status: filter.value, page: null }"
+          [attr.aria-current]="query().status === filter.value ? 'true' : null"
+        >
+          {{ filter.label }}
+        </a>
+      </li>
+    }
+  </ul>
+</nav>
+
+@if (result.status === 'loading') {
+  <app-loading-state message="Carregando solicitações..." />
+} @else if (result.status === 'error') {
+  <app-error-state [message]="result.error.message" (retry)="results.reload()" />
+} @else if (result.data.content.length === 0) {
+  <app-empty-state title="Nenhuma solicitação" message="Não há solicitações nesta situação." />
+} @else {
+  <p class="results-count">{{ result.data.totalElements }} solicitação(ões)</p>
+
+  <div class="table-wrap" role="region" aria-label="Lista de solicitações" tabindex="0">
+    <table class="table">
+      <caption class="sr-only">Solicitações de orçamento da plataforma</caption>
+      <thead>
+        <tr>
+          <th scope="col">Nº</th>
+          <th scope="col">Serviço</th>
+          <th scope="col">Cliente</th>
+          <th scope="col">Prestador</th>
+          <th scope="col">Município</th>
+          <th scope="col">Situação</th>
+          <th scope="col">Enviada em</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of result.data.content; track item.id) {
+          <tr>
+            <th scope="row">{{ item.id }}</th>
+            <td>
+              {{ item.categoryName }}
+              <span class="clamp-2 muted">{{ item.description }}</span>
+            </td>
+            <td>{{ item.requesterName }}</td>
+            <td><a [routerLink]="['/profissionais', item.providerId]">{{ item.providerName }}</a></td>
+            <td>{{ item.city }}</td>
+            <td><app-status-badge [status]="item.status" /></td>
+            <td>{{ formatDate(item.createdAt) }}</td>
+          </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <app-pagination [page]="query().page" [totalPages]="result.data.totalPages" />
+}

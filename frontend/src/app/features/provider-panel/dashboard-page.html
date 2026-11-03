@@ -1,0 +1,128 @@
+@let profileState = profile.state();
+@let pendingState = pending.state();
+@let receivedState = received.state();
+
+<section class="container page-section">
+  <h1>Painel do prestador</h1>
+
+  @if (salvo() === 'criado') {
+    <div class="alert alert-info" role="status">Perfil criado! Agora você aparece na busca para os agricultores.</div>
+  } @else if (salvo() === 'atualizado') {
+    <div class="alert alert-info" role="status">Perfil atualizado com sucesso.</div>
+  }
+
+  @if (profileState.status === 'loading') {
+    <app-loading-state message="Carregando seu painel..." />
+  } @else if (profileState.status === 'error') {
+    <app-error-state [message]="profileState.error.message" (retry)="profile.reload()" />
+  } @else if (current(); as me) {
+    <div class="card summary">
+      <div>
+        <h2 class="summary-name">{{ me.professionalName }}</h2>
+        <p class="muted">{{ me.city }}</p>
+        <app-rating-stars [average]="me.ratingAverage" [count]="me.ratingCount" />
+      </div>
+
+      <div class="summary-side">
+        @if (me.available) {
+          <span class="badge badge-ok">Recebendo pedidos</span>
+        } @else {
+          <span class="badge badge-new">Pedidos pausados</span>
+        }
+
+        <div class="actions">
+          <a class="btn btn-primary" routerLink="/painel/perfil">Editar perfil</a>
+          <a class="btn btn-secondary" [routerLink]="['/profissionais', me.id]">Ver como aparece na busca</a>
+          <button type="button" class="btn btn-secondary" [disabled]="toggling()" (click)="toggleAvailability(me)">
+            {{ me.available ? 'Pausar novos pedidos' : 'Voltar a receber pedidos' }}
+          </button>
+        </div>
+
+        <p class="sr-only" role="status">{{ toggleResult() }}</p>
+        @if (toggleResult()) {
+          <p class="hint" aria-hidden="true">{{ toggleResult() }}</p>
+        }
+        @if (toggleError(); as message) {
+          <div class="alert alert-error" role="alert">{{ message }}</div>
+        }
+      </div>
+    </div>
+
+    <h2>Pedidos recebidos</h2>
+
+    @if (pendingState.status === 'ready' && pendingState.data.totalElements > 0) {
+      <div class="alert alert-info">
+        <strong>
+          {{ pendingState.data.totalElements }}
+          {{ pendingState.data.totalElements === 1 ? 'pedido aguardando' : 'pedidos aguardando' }} a sua resposta.
+        </strong>
+        <a routerLink="/painel" [queryParams]="{ status: 'PENDENTE' }">Ver pendentes</a>
+      </div>
+    }
+
+    <nav aria-label="Filtrar pedidos por situação">
+      <ul class="chips filter-chips">
+        @for (filter of filters; track filter.label) {
+          <li>
+            <a
+              class="chip chip-link"
+              routerLink="/painel"
+              [queryParams]="{ status: filter.value, page: null }"
+              [attr.aria-current]="query().status === filter.value ? 'true' : null"
+            >
+              {{ filter.label }}
+            </a>
+          </li>
+        }
+      </ul>
+    </nav>
+
+    @if (receivedState.status === 'loading') {
+      <app-loading-state message="Carregando pedidos..." />
+    } @else if (receivedState.status === 'error') {
+      <app-error-state [message]="receivedState.error.message" (retry)="received.reload()" />
+    } @else if (receivedState.data.content.length === 0) {
+      @if (query().status !== null || query().page > 1) {
+        <app-empty-state title="Nada por aqui" message="Nenhum pedido nesta situação.">
+          <a class="btn btn-secondary" routerLink="/painel">Ver todos</a>
+        </app-empty-state>
+      } @else {
+        <app-empty-state
+          title="Você ainda não recebeu pedidos"
+          message="Quando um agricultor pedir um orçamento, ele aparece aqui. Perfis completos e com preço recebem mais pedidos."
+        >
+          <a class="btn btn-secondary" routerLink="/painel/perfil">Melhorar o meu perfil</a>
+        </app-empty-state>
+      }
+    } @else {
+      <ul class="request-list">
+        @for (item of receivedState.data.content; track item.id) {
+          <li class="card card-clickable">
+            <div class="request-head">
+              <h3 class="request-title">
+                <a class="stretched" [routerLink]="['/solicitacoes', item.id]">{{ item.category.name }}</a>
+              </h3>
+              <app-status-badge [status]="item.status" />
+            </div>
+            <p class="request-meta">
+              {{ item.requester?.name ?? 'Cliente' }} · {{ item.city }}
+              @if (item.desiredDate) {
+                · Data desejada: {{ formatDateOnly(item.desiredDate) }}
+              }
+            </p>
+            <p class="request-meta">Recebido em {{ formatDate(item.createdAt) }}</p>
+          </li>
+        }
+      </ul>
+
+      <app-pagination [page]="query().page" [totalPages]="receivedState.data.totalPages" />
+    }
+  } @else {
+    <app-empty-state
+      title="Complete o seu perfil para aparecer na busca"
+      message="Conte o que você faz, onde atende e quanto cobra. Leva poucos minutos."
+    >
+      <a class="btn btn-primary" routerLink="/painel/perfil">Criar meu perfil</a>
+    </app-empty-state>
+  }
+</section>

@@ -54,7 +54,8 @@ export class RegisterPage {
       })
       .subscribe({
         next: (user) => {
-          const fallback = user.role === 'PROVIDER' ? '/conta' : '/';
+          // Quem acabou de se cadastrar como prestador vai direto criar o perfil
+          const fallback = user.role === 'PROVIDER' ? '/painel/perfil' : '/';
           void this.router.navigateByUrl(safeReturnUrl(this.returnUrl(), fallback));
         },
         error: (error: unknown) => {
