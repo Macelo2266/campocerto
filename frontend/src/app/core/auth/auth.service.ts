@@ -34,6 +34,16 @@ export class AuthService {
     );
   }
 
+  /** Pede o e-mail de recuperação. A API responde igual exista ou não a conta (sem revelar e-mails). */
+  forgotPassword(email: string): Observable<void> {
+    return this.http.post<void>('/api/auth/forgot-password', { email });
+  }
+
+  /** Define a nova senha com o token recebido por e-mail. Não inicia sessão: a pessoa entra em seguida. */
+  resetPassword(token: string, password: string): Observable<void> {
+    return this.http.post<void>('/api/auth/reset-password', { token, password });
+  }
+
   /** Busca os dados atuais do usuário no servidor (também confirma que o token ainda vale). */
   refreshUser(silent = false): Observable<User> {
     const context = new HttpContext().set(SILENT_UNAUTHORIZED, silent);

@@ -73,6 +73,7 @@
           @if (fieldError(form.controls.password); as message) {
             <p id="password-error" class="field-error">{{ message }}</p>
           }
+          <p class="field-link"><a routerLink="/esqueci-senha">Esqueci minha senha</a></p>
         </div>
 
         <button class="btn btn-primary btn-block" type="submit" [disabled]="loading()">

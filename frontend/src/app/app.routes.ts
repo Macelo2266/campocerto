@@ -91,6 +91,20 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/login-page').then((m) => m.LoginPage),
   },
   {
+    path: 'esqueci-senha',
+    title: 'Esqueci minha senha | CampoCerto',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./features/auth/forgot-password-page').then((m) => m.ForgotPasswordPage),
+  },
+  {
+    path: 'redefinir-senha',
+    title: 'Criar nova senha | CampoCerto',
+    canActivate: [guestGuard],
+    loadComponent: () =>
+      import('./features/auth/reset-password-page').then((m) => m.ResetPasswordPage),
+  },
+  {
     path: 'cadastrar',
     title: 'Criar conta | CampoCerto',
     canActivate: [guestGuard],
