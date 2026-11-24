@@ -9,14 +9,14 @@ import { loadResource } from '../../core/http/load-state';
 import { ErrorState } from '../../shared/error-state/error-state';
 import { LoadingState } from '../../shared/loading-state/loading-state';
 import { ProviderCard } from '../../shared/provider-card/provider-card';
-import { categoryIcon } from '../../shared/category-icon';
+import { categoryIconName } from '../../shared/category-icon';
+import { Icon } from '../../shared/icon/icon';
 import { toQueryParams } from '../providers/search-query';
 
 @Component({
   selector: 'app-home-page',
-  imports: [ReactiveFormsModule, RouterLink, ProviderCard, LoadingState, ErrorState],
+  imports: [ReactiveFormsModule, RouterLink, ProviderCard, LoadingState, ErrorState, Icon],
   templateUrl: './home-page.html',
-  styleUrl: './home-page.css',
 })
 export class HomePage {
   protected readonly auth = inject(AuthService);
@@ -30,10 +30,11 @@ export class HomePage {
   protected readonly featured = loadResource(
     () => null,
     () =>
-      this.providerService.search({ q: '', category: null, city: '', sort: 'RATING', page: 1, size: 3 }),
+      this.providerService.search({ q: '', category: null, city: '', sort: 'RATING', page: 1, size: 6 }),
   );
 
-  protected readonly icon = categoryIcon;
+  protected readonly icon = categoryIconName;
+  protected readonly placeholders = [1, 2, 3];
 
   protected readonly form = this.fb.group({
     q: [''],

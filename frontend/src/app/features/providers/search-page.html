@@ -3,7 +3,10 @@
 @let result = results.state();
 
 <section class="container page-section">
-  <h1>Encontrar profissionais</h1>
+  <header class="page-head">
+    <h1>Encontrar profissionais</h1>
+    <p>Filtre por serviço e cidade e compare notas, serviços e preços antes de pedir um orçamento.</p>
+  </header>
 
   <form class="filters card" [formGroup]="form" (ngSubmit)="search()" role="search" aria-label="Buscar profissionais">
     <div class="field">
@@ -70,7 +73,19 @@
   </p>
 
   @if (result.status === 'loading') {
-    <app-loading-state message="Buscando profissionais..." />
+    <p class="sr-only" role="status">Buscando profissionais...</p>
+    <ul class="provider-grid" aria-hidden="true">
+      @for (n of placeholders; track n) {
+        <li>
+          <div class="card skeleton-card">
+            <div class="skeleton skeleton-circle"></div>
+            <div class="skeleton skeleton-line w-60"></div>
+            <div class="skeleton skeleton-line"></div>
+            <div class="skeleton skeleton-line w-40"></div>
+          </div>
+        </li>
+      }
+    </ul>
   } @else if (result.status === 'error') {
     <app-error-state [message]="result.error.message" (retry)="results.reload()" />
   } @else if (result.data.content.length === 0) {

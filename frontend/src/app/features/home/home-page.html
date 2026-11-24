@@ -3,45 +3,69 @@
 @let featuredList = featured.state();
 
 <section class="hero">
-  <div class="container">
-    <h1>Serviços rurais, de gente da sua região</h1>
+  <svg class="hero-art" viewBox="0 0 1440 620" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+    <circle class="halo" cx="1130" cy="190" r="230" />
+    <circle class="halo" cx="1130" cy="190" r="140" />
+    <circle class="sun" cx="1130" cy="190" r="64" />
+    <path class="hill-3" d="M0 440C240 370 470 410 720 388S1190 338 1440 400V620H0Z" />
+    <path class="hill-2" d="M0 490C300 440 560 510 840 470S1250 440 1440 480V620H0Z" />
+    <g class="rows">
+      <path d="M0 506C300 458 560 526 840 488S1250 458 1440 498" />
+      <path d="M0 526C300 480 560 546 840 510S1250 482 1440 520" />
+      <path d="M0 548C300 504 560 566 840 532S1250 506 1440 542" />
+    </g>
+    <path class="hill-1" d="M0 566C320 534 640 584 960 558S1310 534 1440 552V620H0Z" />
+  </svg>
+
+  <div class="container hero-inner">
+    <h1>O profissional certo para o trabalho da sua propriedade</h1>
     <p class="lead">
-      Encontre quem faz cerca, roçagem, plantio, bomba d'água e muito mais, pertinho da sua propriedade.
+      Encontre quem faz cerca, roçagem, plantio, bomba d'água e muito mais, pertinho de você, e peça um orçamento sem sair do CampoCerto.
     </p>
-
-    <form class="search-box card" [formGroup]="form" (ngSubmit)="search()" role="search" aria-label="Buscar profissionais">
-      <div class="field">
-        <label for="home-q">O que você precisa?</label>
-        <input
-          id="home-q"
-          class="input"
-          type="search"
-          formControlName="q"
-          maxlength="100"
-          autocomplete="off"
-          placeholder="Ex.: cerca, roçagem, trator"
-        />
-      </div>
-
-      <div class="field">
-        <label for="home-city">Cidade</label>
-        <select id="home-city" class="input" formControlName="city">
-          <option value="">Todas as cidades</option>
-          @if (cityList.status === 'ready') {
-            @for (name of cityList.data; track name) {
-              <option [value]="name">{{ name }}</option>
-            }
-          }
-        </select>
-      </div>
-
-      <button class="btn btn-primary" type="submit">Encontrar profissionais</button>
-    </form>
   </div>
 </section>
 
+<div class="container search-wrap">
+  <form class="search-box card" [formGroup]="form" (ngSubmit)="search()" role="search" aria-label="Buscar profissionais">
+    <div class="field">
+      <label for="home-q">O que você precisa?</label>
+      <input
+        id="home-q"
+        class="input"
+        type="search"
+        formControlName="q"
+        maxlength="100"
+        autocomplete="off"
+        placeholder="Ex.: cerca, roçagem, trator"
+      />
+    </div>
+
+    <div class="field">
+      <label for="home-city">Cidade</label>
+      <select id="home-city" class="input" formControlName="city">
+        <option value="">Todas as cidades</option>
+        @if (cityList.status === 'ready') {
+          @for (name of cityList.data; track name) {
+            <option [value]="name">{{ name }}</option>
+          }
+        }
+      </select>
+    </div>
+
+    <button class="btn btn-primary" type="submit">
+      <app-icon name="search" [size]="20" />
+      Encontrar profissionais
+    </button>
+  </form>
+</div>
+
 <section class="container section" aria-labelledby="services-title">
-  <h2 id="services-title">Escolha um serviço</h2>
+  <div class="section-head">
+    <div>
+      <h2 id="services-title">Escolha um serviço</h2>
+      <p>Toque em uma categoria para ver quem atende na sua região.</p>
+    </div>
+  </div>
 
   @if (categoryList.status === 'loading') {
     <app-loading-state message="Carregando serviços..." />
@@ -52,7 +76,7 @@
       @for (category of categoryList.data; track category.id) {
         <li>
           <a class="category-card" routerLink="/profissionais" [queryParams]="{ category: category.id }">
-            <span class="category-icon" aria-hidden="true">{{ icon(category.slug) }}</span>
+            <span class="icon-tile"><app-icon [name]="icon(category.slug)" [size]="24" /></span>
             <span>{{ category.name }}</span>
           </a>
         </li>
@@ -62,57 +86,141 @@
 </section>
 
 <section class="container section" aria-labelledby="featured-title">
-  <h2 id="featured-title">Profissionais em destaque</h2>
+  <div class="section-head">
+    <div>
+      <h2 id="featured-title">Profissionais em destaque</h2>
+      <p>Os mais bem avaliados da plataforma.</p>
+    </div>
+    @if (featuredList.status === 'ready' && featuredList.data.content.length > 0) {
+      <a class="btn btn-secondary" routerLink="/profissionais">
+        Ver todos
+        <app-icon name="arrow-right" [size]="18" />
+      </a>
+    }
+  </div>
 
   @if (featuredList.status === 'loading') {
-    <app-loading-state message="Carregando profissionais..." />
+    <p class="sr-only" role="status">Carregando profissionais...</p>
+    <ul class="provider-grid" aria-hidden="true">
+      @for (n of placeholders; track n) {
+        <li>
+          <div class="card skeleton-card">
+            <div class="skeleton skeleton-circle"></div>
+            <div class="skeleton skeleton-line w-60"></div>
+            <div class="skeleton skeleton-line"></div>
+            <div class="skeleton skeleton-line w-40"></div>
+          </div>
+        </li>
+      }
+    </ul>
   } @else if (featuredList.status === 'error') {
     <app-error-state [message]="featuredList.error.message" (retry)="featured.reload()" />
   } @else if (featuredList.data.content.length === 0) {
-    <p class="muted">Ainda não há profissionais cadastrados na plataforma.</p>
+    <div class="card text-center">
+      <p class="muted flush">Ainda não há profissionais cadastrados na plataforma.</p>
+    </div>
   } @else {
     <ul class="provider-grid">
       @for (provider of featuredList.data.content; track provider.id) {
         <li><app-provider-card [provider]="provider" /></li>
       }
     </ul>
-    <p class="see-all"><a class="btn btn-secondary" routerLink="/profissionais">Ver todos os profissionais</a></p>
   }
 </section>
 
-<section class="container section" aria-labelledby="how-title">
-  <h2 id="how-title">Como funciona</h2>
+<section id="como-funciona" class="container section" aria-labelledby="how-title">
+  <div class="section-head">
+    <div>
+      <h2 id="how-title">Como funciona</h2>
+      <p>Do pedido ao serviço combinado, em quatro passos.</p>
+    </div>
+  </div>
+
   <ol class="steps">
     <li>
-      <span class="step-number" aria-hidden="true">1</span>
-      <div>
-        <h3>Procure</h3>
-        <p>Escolha o serviço e a cidade para ver quem trabalha na sua região.</p>
-      </div>
+      <h3>Procure um serviço</h3>
+      <p>Escolha o serviço e a cidade para ver quem trabalha na sua região.</p>
     </li>
     <li>
-      <span class="step-number" aria-hidden="true">2</span>
-      <div>
-        <h3>Peça um orçamento</h3>
-        <p>Conte o que precisa ser feito e converse com o profissional.</p>
-      </div>
+      <h3>Encontre um profissional</h3>
+      <p>Compare notas, serviços e preços de cada perfil antes de decidir.</p>
     </li>
     <li>
-      <span class="step-number" aria-hidden="true">3</span>
-      <div>
-        <h3>Combine e avalie</h3>
-        <p>Depois do serviço, conte como foi e ajude outros agricultores a escolher.</p>
-      </div>
+      <h3>Peça um orçamento</h3>
+      <p>Conte o que precisa ser feito e envie o pedido pelo CampoCerto.</p>
+    </li>
+    <li>
+      <h3>Combine direto</h3>
+      <p>Converse com o profissional, feche o serviço e, depois, conte como foi.</p>
     </li>
   </ol>
 </section>
 
+<div class="benefits-band">
+  <section class="container" aria-labelledby="benefits-title">
+    <div class="section-head">
+      <div>
+        <h2 id="benefits-title">Por que usar o CampoCerto</h2>
+        <p>Feito para quem vive e trabalha no campo.</p>
+      </div>
+    </div>
+
+    <ul class="benefits">
+      <li>
+        <span class="icon-tile"><app-icon name="map-pin" [size]="24" /></span>
+        <div>
+          <h3>Gente da sua região</h3>
+          <p>Busque por serviço e cidade e veja só quem atende perto da sua propriedade.</p>
+        </div>
+      </li>
+      <li>
+        <span class="icon-tile"><app-icon name="star" [size]="24" /></span>
+        <div>
+          <h3>Avaliações de clientes</h3>
+          <p>Notas e comentários de quem já contratou ajudam você a escolher com confiança.</p>
+        </div>
+      </li>
+      <li>
+        <span class="icon-tile"><app-icon name="tag" [size]="24" /></span>
+        <div>
+          <h3>Preço à vista</h3>
+          <p>Cada profissional pode informar o valor de cada serviço no próprio perfil.</p>
+        </div>
+      </li>
+      <li>
+        <span class="icon-tile"><app-icon name="file-text" [size]="24" /></span>
+        <div>
+          <h3>Orçamento sem complicação</h3>
+          <p>Descreva o trabalho uma vez e acompanhe a resposta pela plataforma.</p>
+        </div>
+      </li>
+      <li>
+        <span class="icon-tile"><app-icon name="message" [size]="24" /></span>
+        <div>
+          <h3>Conversa direta</h3>
+          <p>Combine os detalhes pelo WhatsApp, direto com o profissional.</p>
+        </div>
+      </li>
+      <li>
+        <span class="icon-tile"><app-icon name="shield-check" [size]="24" /></span>
+        <div>
+          <h3>Fácil de usar</h3>
+          <p>Letras grandes, botões claros e telas que funcionam bem no celular.</p>
+        </div>
+      </li>
+    </ul>
+  </section>
+</div>
+
 @if (!auth.isLoggedIn()) {
-  <section class="container section">
+  <section class="container section" aria-labelledby="cta-title">
     <div class="cta-band">
-      <h2>Você presta serviços no campo?</h2>
-      <p>Crie o seu perfil e seja encontrado por agricultores da sua região.</p>
-      <a class="btn btn-primary" routerLink="/cadastrar">Cadastrar como prestador</a>
+      <div>
+        <h2 id="cta-title">Você presta serviços no campo?</h2>
+        <p>Crie o seu perfil, mostre o que você faz e seja encontrado por agricultores da sua região.</p>
+      </div>
+      <a class="btn btn-accent" routerLink="/cadastrar">Cadastrar como prestador</a>
     </div>
   </section>
 }
+

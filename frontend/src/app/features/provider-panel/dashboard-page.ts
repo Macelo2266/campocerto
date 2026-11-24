@@ -4,13 +4,16 @@ import { RouterLink } from '@angular/router';
 
 import { ProviderAccountService, toProfilePayload } from '../../core/api/provider-account.service';
 import { ServiceRequestService } from '../../core/api/service-request.service';
+import { AuthService } from '../../core/auth/auth.service';
 import { toApiError } from '../../core/http/api-error';
 import { loadResource } from '../../core/http/load-state';
 import { ProviderProfile } from '../../core/models/provider.model';
 import { STATUS_FILTERS, parseStatus } from '../../core/models/service-request.model';
 import { formatDate, formatDateOnly } from '../../core/util/format';
+import { Avatar } from '../../shared/avatar/avatar';
 import { EmptyState } from '../../shared/empty-state/empty-state';
 import { ErrorState } from '../../shared/error-state/error-state';
+import { Icon } from '../../shared/icon/icon';
 import { LoadingState } from '../../shared/loading-state/loading-state';
 import { Pagination } from '../../shared/pagination/pagination';
 import { RatingStars } from '../../shared/rating-stars/rating-stars';
@@ -21,10 +24,21 @@ const PAGE_SIZE = 10;
 
 @Component({
   selector: 'app-dashboard-page',
-  imports: [RouterLink, StatusBadge, RatingStars, Pagination, LoadingState, EmptyState, ErrorState],
+  imports: [
+    RouterLink,
+    StatusBadge,
+    RatingStars,
+    Pagination,
+    LoadingState,
+    EmptyState,
+    ErrorState,
+    Icon,
+    Avatar,
+  ],
   templateUrl: './dashboard-page.html',
 })
 export class DashboardPage {
+  protected readonly auth = inject(AuthService);
   private readonly account = inject(ProviderAccountService);
   private readonly requests = inject(ServiceRequestService);
   private readonly destroyRef = inject(DestroyRef);
@@ -61,6 +75,8 @@ export class DashboardPage {
     const state = this.profile.state();
     return state.status === 'ready' ? state.data : null;
   });
+
+  protected readonly firstName = computed(() => this.auth.user()?.name.trim().split(/\s+/)[0] ?? '');
 
   protected readonly toggling = signal(false);
   protected readonly toggleError = signal<string | null>(null);

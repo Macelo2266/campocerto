@@ -6,8 +6,10 @@ import { throwError } from 'rxjs';
 
 import { ProviderService } from '../../core/api/provider.service';
 import { loadResource } from '../../core/http/load-state';
+import { Avatar } from '../../shared/avatar/avatar';
 import { EmptyState } from '../../shared/empty-state/empty-state';
 import { ErrorState } from '../../shared/error-state/error-state';
+import { Icon } from '../../shared/icon/icon';
 import { LoadingState } from '../../shared/loading-state/loading-state';
 import { RatingStars } from '../../shared/rating-stars/rating-stars';
 import { ProviderContact } from './provider-contact';
@@ -16,9 +18,18 @@ import { parsePositiveInt } from './search-query';
 
 @Component({
   selector: 'app-provider-profile-page',
-  imports: [RouterLink, RatingStars, LoadingState, EmptyState, ErrorState, ReviewsSection, ProviderContact],
+  imports: [
+    RouterLink,
+    RatingStars,
+    LoadingState,
+    EmptyState,
+    ErrorState,
+    ReviewsSection,
+    ProviderContact,
+    Avatar,
+    Icon,
+  ],
   templateUrl: './provider-profile-page.html',
-  styleUrl: './provider-profile-page.css',
 })
 export class ProviderProfilePage {
   private readonly providerService = inject(ProviderService);

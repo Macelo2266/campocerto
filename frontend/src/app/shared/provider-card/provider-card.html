@@ -1,21 +1,37 @@
 <article class="card provider-card">
-  <h3 class="name">
-    <a class="stretched" [routerLink]="['/profissionais', provider().id]">{{ provider().professionalName }}</a>
-  </h3>
-
-  <p class="city"><span aria-hidden="true">📍</span> {{ provider().city }}</p>
+  <div class="pc-head">
+    <app-avatar [name]="provider().professionalName" size="lg" />
+    <div>
+      <h3 class="pc-name">
+        <a class="stretched" [routerLink]="['/profissionais', provider().id]">{{ provider().professionalName }}</a>
+      </h3>
+      <p class="pc-city"><app-icon name="map-pin" [size]="16" /> {{ provider().city }}</p>
+    </div>
+  </div>
 
   <app-rating-stars [average]="provider().ratingAverage" [count]="provider().ratingCount" />
 
   @if (provider().shortDescription) {
-    <p class="desc">{{ provider().shortDescription }}</p>
+    <p class="pc-desc">{{ provider().shortDescription }}</p>
   }
 
   @if (provider().categories.length > 0) {
     <ul class="chips" aria-label="Serviços oferecidos">
-      @for (category of provider().categories; track category) {
+      @for (category of provider().categories.slice(0, 3); track category) {
         <li class="chip">{{ category }}</li>
+      }
+      @if (provider().categories.length > 3) {
+        <li class="chip">+{{ provider().categories.length - 3 }}</li>
       }
     </ul>
   }
+
+  <div class="pc-foot">
+    @if (provider().available) {
+      <span class="badge badge-ok">Disponível</span>
+    } @else {
+      <span class="badge">Sem agenda</span>
+    }
+    <span class="pc-cta" aria-hidden="true">Ver perfil <app-icon name="arrow-right" [size]="18" /></span>
+  </div>
 </article>

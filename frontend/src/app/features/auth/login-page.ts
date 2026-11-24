@@ -7,10 +7,11 @@ import { AuthService } from '../../core/auth/auth.service';
 import { applyServerErrors, fieldError } from '../../core/forms/form-errors';
 import { toApiError } from '../../core/http/api-error';
 import { safeReturnUrl } from '../../core/util/safe-url';
+import { Icon } from '../../shared/icon/icon';
 
 @Component({
   selector: 'app-login-page',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, Icon],
   templateUrl: './login-page.html',
 })
 export class LoginPage {

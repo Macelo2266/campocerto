@@ -18,6 +18,7 @@ import { Component, input } from '@angular/core';
       font-weight: 600;
     }
     .spinner {
+      flex: none;
       width: 1.6rem;
       height: 1.6rem;
       border: 3px solid var(--green-100);

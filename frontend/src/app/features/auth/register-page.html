@@ -1,112 +1,136 @@
-<section class="page-narrow">
-  <div class="card">
-    <h1>Criar conta</h1>
+<div class="auth">
+  <aside class="auth-aside">
+    <h2>Crie sua conta e comece hoje</h2>
+    <p>Agricultores encontram profissionais de confiança. Prestadores mostram o seu trabalho para quem precisa.</p>
+    <ul class="auth-points">
+      <li>
+        <span class="icon-tile"><app-icon name="sprout" [size]="20" /></span>
+        <div><strong>Para o agricultor</strong>Busque, compare e peça orçamentos.</div>
+      </li>
+      <li>
+        <span class="icon-tile"><app-icon name="briefcase" [size]="20" /></span>
+        <div><strong>Para o prestador</strong>Monte o seu perfil e receba pedidos da sua região.</div>
+      </li>
+    </ul>
+  </aside>
 
-    @if (errorMessage(); as message) {
-      <div class="alert alert-error" role="alert">{{ message }}</div>
-    }
+  <section class="auth-main" aria-labelledby="register-title">
+    <div class="card auth-card wide">
+      <h1 id="register-title">Criar conta</h1>
+      <p class="auth-sub">Leva menos de um minuto.</p>
 
-    <form [formGroup]="form" (ngSubmit)="submit()" novalidate [attr.aria-busy]="loading()">
-      <fieldset class="field">
-        <legend>Como você vai usar o CampoCerto?</legend>
+      @if (errorMessage(); as message) {
+        <div class="alert alert-error" role="alert">{{ message }}</div>
+      }
 
-        <label class="choice">
-          <input type="radio" formControlName="role" value="FARMER" />
-          <span>
-            <strong>Sou agricultor</strong><br />
-            <span class="hint">Quero contratar serviços rurais.</span>
-          </span>
-        </label>
+      <form [formGroup]="form" (ngSubmit)="submit()" novalidate [attr.aria-busy]="loading()">
+        <fieldset class="field">
+          <legend>Como você vai usar o CampoCerto?</legend>
+          <div class="role-grid">
+            <label class="role-card">
+              <input type="radio" formControlName="role" value="FARMER" />
+              <span class="icon-tile"><app-icon name="sprout" [size]="24" /></span>
+              <strong>Sou agricultor</strong>
+              <span class="hint">Quero contratar serviços rurais.</span>
+            </label>
+            <label class="role-card">
+              <input type="radio" formControlName="role" value="PROVIDER" />
+              <span class="icon-tile"><app-icon name="tractor" [size]="24" /></span>
+              <strong>Sou prestador de serviços</strong>
+              <span class="hint">Quero oferecer o meu trabalho.</span>
+            </label>
+          </div>
+        </fieldset>
 
-        <label class="choice">
-          <input type="radio" formControlName="role" value="PROVIDER" />
-          <span>
-            <strong>Sou prestador de serviços</strong><br />
-            <span class="hint">Quero oferecer o meu trabalho.</span>
-          </span>
-        </label>
-      </fieldset>
+        <div class="field">
+          <label for="name">Nome completo</label>
+          <input
+            id="name"
+            class="input"
+            type="text"
+            formControlName="name"
+            autocomplete="name"
+            [attr.aria-invalid]="fieldError(form.controls.name) ? 'true' : null"
+            [attr.aria-describedby]="fieldError(form.controls.name) ? 'name-error' : null"
+          />
+          @if (fieldError(form.controls.name); as message) {
+            <p id="name-error" class="field-error">{{ message }}</p>
+          }
+        </div>
 
-      <div class="field">
-        <label for="name">Nome completo</label>
-        <input
-          id="name"
-          class="input"
-          type="text"
-          formControlName="name"
-          autocomplete="name"
-          [attr.aria-invalid]="fieldError(form.controls.name) ? 'true' : null"
-          [attr.aria-describedby]="fieldError(form.controls.name) ? 'name-error' : null"
-        />
-        @if (fieldError(form.controls.name); as message) {
-          <p id="name-error" class="field-error">{{ message }}</p>
-        }
-      </div>
+        <div class="field">
+          <label for="email">E-mail</label>
+          <input
+            id="email"
+            class="input"
+            type="email"
+            formControlName="email"
+            autocomplete="email"
+            inputmode="email"
+            placeholder="voce@exemplo.com"
+            [attr.aria-invalid]="fieldError(form.controls.email) ? 'true' : null"
+            [attr.aria-describedby]="fieldError(form.controls.email) ? 'email-error' : null"
+          />
+          @if (fieldError(form.controls.email); as message) {
+            <p id="email-error" class="field-error">{{ message }}</p>
+          }
+        </div>
 
-      <div class="field">
-        <label for="email">E-mail</label>
-        <input
-          id="email"
-          class="input"
-          type="email"
-          formControlName="email"
-          autocomplete="email"
-          inputmode="email"
-          [attr.aria-invalid]="fieldError(form.controls.email) ? 'true' : null"
-          [attr.aria-describedby]="fieldError(form.controls.email) ? 'email-error' : null"
-        />
-        @if (fieldError(form.controls.email); as message) {
-          <p id="email-error" class="field-error">{{ message }}</p>
-        }
-      </div>
+        <div class="field">
+          <label for="phone">Celular com DDD (opcional)</label>
+          <input
+            id="phone"
+            class="input"
+            type="tel"
+            formControlName="phone"
+            autocomplete="tel"
+            inputmode="tel"
+            placeholder="(83) 99999-0000"
+            [attr.aria-invalid]="fieldError(form.controls.phone) ? 'true' : null"
+            [attr.aria-describedby]="fieldError(form.controls.phone) ? 'phone-error' : null"
+          />
+          @if (fieldError(form.controls.phone); as message) {
+            <p id="phone-error" class="field-error">{{ message }}</p>
+          }
+        </div>
 
-      <div class="field">
-        <label for="phone">Celular com DDD (opcional)</label>
-        <input
-          id="phone"
-          class="input"
-          type="tel"
-          formControlName="phone"
-          autocomplete="tel"
-          inputmode="tel"
-          placeholder="(83) 99999-0000"
-          [attr.aria-invalid]="fieldError(form.controls.phone) ? 'true' : null"
-          [attr.aria-describedby]="fieldError(form.controls.phone) ? 'phone-error' : null"
-        />
-        @if (fieldError(form.controls.phone); as message) {
-          <p id="phone-error" class="field-error">{{ message }}</p>
-        }
-      </div>
+        <div class="field">
+          <label for="password">Senha</label>
+          <div class="input-wrap">
+            <input
+              id="password"
+              class="input"
+              [type]="showPassword() ? 'text' : 'password'"
+              formControlName="password"
+              autocomplete="new-password"
+              [attr.aria-invalid]="fieldError(form.controls.password) ? 'true' : null"
+              [attr.aria-describedby]="fieldError(form.controls.password) ? 'password-hint password-error' : 'password-hint'"
+            />
+            <button
+              type="button"
+              class="input-toggle"
+              [attr.aria-label]="showPassword() ? 'Ocultar senha' : 'Mostrar senha'"
+              [attr.aria-pressed]="showPassword()"
+              (click)="showPassword.set(!showPassword())"
+            >
+              <app-icon [name]="showPassword() ? 'eye-off' : 'eye'" [size]="22" />
+            </button>
+          </div>
+          <p id="password-hint" class="hint">Use de 8 a 72 caracteres.</p>
+          @if (fieldError(form.controls.password); as message) {
+            <p id="password-error" class="field-error">{{ message }}</p>
+          }
+        </div>
 
-      <div class="field">
-        <label for="password">Senha</label>
-        <input
-          id="password"
-          class="input"
-          [type]="showPassword() ? 'text' : 'password'"
-          formControlName="password"
-          autocomplete="new-password"
-          [attr.aria-invalid]="fieldError(form.controls.password) ? 'true' : null"
-          [attr.aria-describedby]="fieldError(form.controls.password) ? 'password-hint password-error' : 'password-hint'"
-        />
-        <p id="password-hint" class="hint">Use de 8 a 72 caracteres.</p>
-        @if (fieldError(form.controls.password); as message) {
-          <p id="password-error" class="field-error">{{ message }}</p>
-        }
-        <label class="check">
-          <input type="checkbox" [checked]="showPassword()" (change)="showPassword.set(!showPassword())" />
-          Mostrar senha
-        </label>
-      </div>
+        <button class="btn btn-primary btn-block" type="submit" [disabled]="loading()">
+          {{ loading() ? 'Criando conta...' : 'Criar conta' }}
+        </button>
+      </form>
 
-      <button class="btn btn-primary btn-block" type="submit" [disabled]="loading()">
-        {{ loading() ? 'Criando conta...' : 'Criar conta' }}
-      </button>
-    </form>
-
-    <p>
-      Já tem conta?
-      <a routerLink="/entrar" [queryParams]="returnUrl() ? { returnUrl: returnUrl() } : null">Entrar</a>
-    </p>
-  </div>
-</section>
+      <p class="auth-switch">
+        Já tem conta?
+        <a routerLink="/entrar" [queryParams]="returnUrl() ? { returnUrl: returnUrl() } : null">Entrar</a>
+      </p>
+    </div>
+  </section>
+</div>

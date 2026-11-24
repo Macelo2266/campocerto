@@ -8,14 +8,13 @@ import { loadResource } from '../../core/http/load-state';
 import { ProviderSearchQuery, ProviderSort, SORT_OPTIONS } from '../../core/models/provider.model';
 import { EmptyState } from '../../shared/empty-state/empty-state';
 import { ErrorState } from '../../shared/error-state/error-state';
-import { LoadingState } from '../../shared/loading-state/loading-state';
 import { Pagination } from '../../shared/pagination/pagination';
 import { ProviderCard } from '../../shared/provider-card/provider-card';
 import { DEFAULT_SORT, PAGE_SIZE, parsePositiveInt, parseSort, toQueryParams } from './search-query';
 
 @Component({
   selector: 'app-search-page',
-  imports: [ReactiveFormsModule, RouterLink, ProviderCard, Pagination, LoadingState, EmptyState, ErrorState],
+  imports: [ReactiveFormsModule, RouterLink, ProviderCard, Pagination, EmptyState, ErrorState],
   templateUrl: './search-page.html',
 })
 export class SearchPage {
@@ -32,6 +31,7 @@ export class SearchPage {
   readonly page = input<string>();
 
   protected readonly sortOptions = SORT_OPTIONS;
+  protected readonly placeholders = [1, 2, 3, 4, 5, 6];
 
   /** A URL, já sanitizada, é a fonte da verdade da busca. */
   protected readonly query = computed<ProviderSearchQuery>(() => ({

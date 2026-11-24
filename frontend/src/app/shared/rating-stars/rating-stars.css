@@ -1,11 +1,12 @@
 .rating {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.5rem;
 }
 
-.stars { letter-spacing: 0.1rem; font-size: 1.15rem; line-height: 1; }
-.stars span { color: var(--border); }
-.stars .on { color: #b7791f; }
+.stars { letter-spacing: 0.08rem; font-size: 1.1rem; line-height: 1; }
+.stars span { color: #d3dcd5; }
+.stars .on { color: var(--sun-500); }
 
-.rating-text { font-size: 0.95rem; color: var(--muted); }
+.rating-text { font-size: 0.93rem; color: var(--muted); }
+.rating-text strong { color: var(--text); }

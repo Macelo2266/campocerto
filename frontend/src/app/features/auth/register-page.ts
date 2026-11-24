@@ -7,10 +7,11 @@ import { applyServerErrors, fieldError } from '../../core/forms/form-errors';
 import { toApiError } from '../../core/http/api-error';
 import { AccountRole } from '../../core/models/user.model';
 import { safeReturnUrl } from '../../core/util/safe-url';
+import { Icon } from '../../shared/icon/icon';
 
 @Component({
   selector: 'app-register-page',
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink, Icon],
   templateUrl: './register-page.html',
 })
 export class RegisterPage {

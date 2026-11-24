@@ -4,9 +4,12 @@ import { Router } from '@angular/router';
 
 import { AuthService } from '../../core/auth/auth.service';
 import { ROLE_LABELS, UserRole } from '../../core/models/user.model';
+import { Avatar } from '../../shared/avatar/avatar';
+import { Icon } from '../../shared/icon/icon';
 
 @Component({
   selector: 'app-account-page',
+  imports: [Avatar, Icon],
   templateUrl: './account-page.html',
 })
 export class AccountPage {

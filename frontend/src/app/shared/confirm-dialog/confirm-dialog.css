@@ -1,14 +1,17 @@
 .confirm-dialog {
   width: min(100% - 2rem, 30rem);
-  padding: 1.5rem;
+  padding: 1.75rem;
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   background: var(--surface);
   color: var(--text);
-  box-shadow: 0 12px 40px rgb(0 0 0 / 0.3);
+  box-shadow: var(--shadow-lg);
 }
-
-.confirm-dialog::backdrop { background: rgb(0 0 0 / 0.55); }
-
+.confirm-dialog[open] { animation: dialog-in 0.18s var(--ease); }
+.confirm-dialog::backdrop { background: rgb(12 36 26 / 0.6); backdrop-filter: blur(2px); }
+@keyframes dialog-in {
+  from { opacity: 0; transform: translateY(8px) scale(0.98); }
+}
 h2 { margin-top: 0; font-size: 1.3rem; }
 p { margin: 0 0 1.25rem; overflow-wrap: anywhere; }
+.actions { justify-content: flex-end; margin-top: 0; }

@@ -1,19 +1,46 @@
-<div class="container page-section">
-  <h1>Administração</h1>
+<div class="container page-section panel">
+  <aside class="panel-side">
+    <div class="panel-user">
+      <app-avatar [name]="auth.user()?.name ?? 'Administrador'" />
+      <div>
+        <strong>{{ auth.user()?.name }}</strong>
+        <span>Administração</span>
+      </div>
+    </div>
 
-  <nav class="admin-nav" aria-label="Seções da administração">
-    <ul>
-      <li>
-        <a routerLink="/admin" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]="{ exact: true }">
-          Resumo
-        </a>
-      </li>
-      <li><a routerLink="/admin/usuarios" routerLinkActive="active" ariaCurrentWhenActive="page">Usuários</a></li>
-      <li><a routerLink="/admin/avaliacoes" routerLinkActive="active" ariaCurrentWhenActive="page">Avaliações</a></li>
-      <li><a routerLink="/admin/solicitacoes" routerLinkActive="active" ariaCurrentWhenActive="page">Solicitações</a></li>
-      <li><a routerLink="/admin/categorias" routerLinkActive="active" ariaCurrentWhenActive="page">Categorias</a></li>
-    </ul>
-  </nav>
+    <h1 class="panel-title">Administração</h1>
+    <nav aria-label="Seções da administração">
+      <ul class="side-nav">
+        <li>
+          <a class="side-link" routerLink="/admin" routerLinkActive="active" ariaCurrentWhenActive="page" [routerLinkActiveOptions]="{ exact: true }">
+            <app-icon name="grid" /> Resumo
+          </a>
+        </li>
+        <li>
+          <a class="side-link" routerLink="/admin/usuarios" routerLinkActive="active" ariaCurrentWhenActive="page">
+            <app-icon name="users" /> Usuários
+          </a>
+        </li>
+        <li>
+          <a class="side-link" routerLink="/admin/solicitacoes" routerLinkActive="active" ariaCurrentWhenActive="page">
+            <app-icon name="file-text" /> Solicitações
+          </a>
+        </li>
+        <li>
+          <a class="side-link" routerLink="/admin/avaliacoes" routerLinkActive="active" ariaCurrentWhenActive="page">
+            <app-icon name="star" /> Avaliações
+          </a>
+        </li>
+        <li>
+          <a class="side-link" routerLink="/admin/categorias" routerLinkActive="active" ariaCurrentWhenActive="page">
+            <app-icon name="tag" /> Categorias
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
 
-  <router-outlet />
+  <div class="panel-main">
+    <router-outlet />
+  </div>
 </div>
